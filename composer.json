@@ -54,6 +54,12 @@
         "symfony": {
             "allow-contrib": false,
             "require": "4.2.*"
+        },
+        "bamarni-bin": {
+            "bin-links": false
         }
+    },
+    "require-dev": {
+        "bamarni/composer-bin-plugin": "^1.2"
     }
 }
