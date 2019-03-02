@@ -7,8 +7,14 @@ steps:
     commands:
       - composer install --ignore-platform-reqs
       - composer bin codestyle install
+      - composer bin phpstan install
 
   - name: codestyle
     image: php:7.3-cli
     commands:
       - php vendor-bin/codestyle/vendor/bin/php-cs-fixer fix --diff --diff-format udiff  --dry-run
+
+  - name: static-code-analysis
+    image: php:7.3-cli
+    commands:
+      - php vendor-bin/phpstan/vendor/bin/phpstan analyse -l 4

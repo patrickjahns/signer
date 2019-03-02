@@ -1,0 +1,6 @@
+{
+  "require": {
+    "phpstan/phpstan": "^0.11",
+    "phpstan/phpstan-symfony": "^0.11"
+  }
+}
