@@ -6,3 +6,9 @@ steps:
     image: composer
     commands:
       - composer install --ignore-platform-reqs
+      - composer bin codestyle install
+
+  - name: codestyle
+    image: php:7.3-cli
+    commands:
+      - php vendor-bin/codestyle/vendor/bin/php-cs-fixer fix --diff --diff-format udiff  --dry-run
