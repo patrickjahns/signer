@@ -32,6 +32,9 @@
     "psr/simple-cache": {
         "version": "1.0.1"
     },
+    "roave/security-advisories": {
+        "version": "dev-master"
+    },
     "spomky-labs/base64url": {
         "version": "v2.0.1"
     },
