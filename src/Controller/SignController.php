@@ -22,12 +22,78 @@
 
 namespace Signer\Controller;
 
+use Signer\Service\ArchiveService;
+use Signer\Service\CodeSignService;
+use Signer\Service\OCAppService;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\FileBag;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 class SignController
 {
-    public function sign()
+    /**
+     * @var CodeSignService
+     */
+    private $codeSignService;
+
+    /**
+     * SignController constructor.
+     *
+     * @param CodeSignService $codeSignService
+     */
+    public function __construct(CodeSignService $codeSignService)
     {
-        return new Response();
+        $this->codeSignService = $codeSignService;
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return BinaryFileResponse|Response
+     *
+     * @throws \Exception
+     */
+    public function sign(Request $request)
+    {
+        //TODO: security check if jwt authenticated request
+
+        /** @var FileBag $files */
+        $files = $request->files->all();
+        if (count($files) > 1 || 0 === count($files)) {
+            return new Response(null, Response::HTTP_BAD_REQUEST);
+        }
+        /** @var UploadedFile $file */
+        $file = array_shift($files);
+
+        if (!$file->isValid()) {
+            return new Response(null, Response::HTTP_BAD_REQUEST);
+        }
+        // Extract
+        $archiveService = new ArchiveService();
+        $path = $archiveService->getTempFolder();
+        $archiveService->extract($file, $path);
+
+        // Load information on the app
+        $infoFile = OCAppService::findAppInfoXML($path);
+        $xmlString = OCAppService::getAppXMLAsString($infoFile);
+        $appInfo = OCAppService::createFromXMLString($xmlString);
+        $appPath = $path . '/' . $appInfo->getId();
+
+        //TODO: security check if allowed to sign
+
+        // sign app
+        $this->codeSignService->signApp($appPath, $appInfo->getId());
+
+        // compress signed app
+        $archiveName = $appInfo->getId() . '-' . $appInfo->getVersion() . '.tar.gz';
+        $newArchive = $archiveService->compress($appPath, $archiveName);
+
+        $response = new BinaryFileResponse($newArchive);
+        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_INLINE, $archiveName, $archiveName);
+
+        return $response;
     }
 }
