@@ -22,6 +22,7 @@
 
 namespace Signer\Controller;
 
+use Signer\Security\JWTSecurity;
 use Signer\Service\ArchiveService;
 use Signer\Service\CodeSignService;
 use Signer\Service\OCAppService;
@@ -40,13 +41,19 @@ class SignController
     private $codeSignService;
 
     /**
+     * @var JWTSecurity
+     */
+    private $security;
+
+    /**
      * SignController constructor.
      *
      * @param CodeSignService $codeSignService
      */
-    public function __construct(CodeSignService $codeSignService)
+    public function __construct(CodeSignService $codeSignService, JWTSecurity $security)
     {
         $this->codeSignService = $codeSignService;
+        $this->security = $security;
     }
 
     /**
@@ -58,7 +65,9 @@ class SignController
      */
     public function sign(Request $request)
     {
-        //TODO: security check if jwt authenticated request
+        if (!$this->security->isAuthenticated($request)) {
+            return new Response(null, Response::HTTP_UNAUTHORIZED);
+        }
 
         /** @var FileBag $files */
         $files = $request->files->all();
@@ -82,7 +91,10 @@ class SignController
         $appInfo = OCAppService::createFromXMLString($xmlString);
         $appPath = $path . '/' . $appInfo->getId();
 
-        //TODO: security check if allowed to sign
+        // check if the given token is authorized to perform the action
+        if (!$this->security->isAuthorizedToPerform($request, 'sign:' . $appInfo->getId())) {
+            return new Response(null, Response::HTTP_FORBIDDEN);
+        }
 
         // sign app
         $this->codeSignService->signApp($appPath, $appInfo->getId());
