@@ -1,0 +1,8 @@
+kind: pipeline
+name: default
+
+steps:
+  - name: composer
+    image: composer
+    commands:
+      - composer install --ignore-platform-reqs
