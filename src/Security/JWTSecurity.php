@@ -52,9 +52,9 @@ class JWTSecurity
     /**
      * JWTSecurity constructor.
      */
-    public function __construct()
+    public function __construct(JWKProvider $JWKProvider)
     {
-        $this->jwk = $jwk = JWK::createFromJson('{"kid":"nHb9SPdujpSiWqUZ95T_bHRQ_tghQokyXS4RTo5_daI","use":"sig","kty":"EC","crv":"P-256","x":"xcxqm_RqIt3LsBGtggB7AtIzmKufs2KAS_KkVUueAjM","y":"YA3ZyMM6F10BvF9Q6pm4zd_cwFCuwVFQo7Vddi97JA4","d":"-h7ESUbdNZa5kpO9Ox2C95akpjzUNGfQmFgs2WA2GsY"}');
+        $this->jwk = $JWKProvider->getJWK();
     }
 
     //TODO: refactor into smaller functions
