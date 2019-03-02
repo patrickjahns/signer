@@ -18,3 +18,8 @@ steps:
     image: php:7.3-cli
     commands:
       - php vendor-bin/phpstan/vendor/bin/phpstan analyse -l 4
+
+  - name: unit-tests
+    image: php:7.3-cli
+    commands:
+      - php vendor-bin/phpunit/vendor/bin/phpunit
