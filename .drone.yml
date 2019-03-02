@@ -8,6 +8,7 @@ steps:
       - composer install --ignore-platform-reqs
       - composer bin codestyle install
       - composer bin phpstan install
+      - composer bin phpunit install
 
   - name: codestyle
     image: php:7.3-cli

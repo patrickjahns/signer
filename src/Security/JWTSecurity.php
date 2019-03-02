@@ -40,19 +40,18 @@ use Jose\Component\Signature\Serializer\JWSSerializerManager;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * Class JWTSecurity
- * @package Signer\Security
+ * Class JWTSecurity.
  */
 class JWTSecurity
 {
-	/**
-	 * @var JWK
-	 */
+    /**
+     * @var JWK
+     */
     private $jwk;
 
-	/**
-	 * JWTSecurity constructor.
-	 */
+    /**
+     * JWTSecurity constructor.
+     */
     public function __construct()
     {
         $this->jwk = $jwk = JWK::createFromJson('{"kid":"nHb9SPdujpSiWqUZ95T_bHRQ_tghQokyXS4RTo5_daI","use":"sig","kty":"EC","crv":"P-256","x":"xcxqm_RqIt3LsBGtggB7AtIzmKufs2KAS_KkVUueAjM","y":"YA3ZyMM6F10BvF9Q6pm4zd_cwFCuwVFQo7Vddi97JA4","d":"-h7ESUbdNZa5kpO9Ox2C95akpjzUNGfQmFgs2WA2GsY"}');
@@ -110,12 +109,14 @@ class JWTSecurity
         return true;
     }
 
-	/**
-	 * @param Request $request
-	 * @param string $action
-	 * @return bool
-	 * @throws \Exception
-	 */
+    /**
+     * @param Request $request
+     * @param string  $action
+     *
+     * @return bool
+     *
+     * @throws \Exception
+     */
     public function isAuthorizedToPerform(Request $request, string $action)
     {
         $token = $this->extractToken($request);
@@ -132,56 +133,58 @@ class JWTSecurity
         $jws = $serializerManager->unserialize($token);
         $claims = $jsonConverter->decode($jws->getPayload());
         if (!array_key_exists('scope', $claims)) {
-        	return false;
-		}
-		if (!is_array($claims['scope'])) {
-			return $this->checkClaim($action, $claims['scope']);
-		}
-		foreach ($claims['scope'] as $scope) {
-			if ($this->checkClaim($scope, $action)) {
-				return true;
-			}
-		}
+            return false;
+        }
+        if (!is_array($claims['scope'])) {
+            return $this->checkClaim($action, $claims['scope']);
+        }
+        foreach ($claims['scope'] as $scope) {
+            if ($this->checkClaim($scope, $action)) {
+                return true;
+            }
+        }
+
         return false;
     }
 
+    /**
+     * @param string $claim
+     * @param string $action
+     *
+     * @return bool
+     */
+    public function checkClaim(string $claim, string $action)
+    {
+        $claim_parts = explode(':', $claim);
+        $action_parts = explode(':', $action);
+        if (2 !== count($claim_parts) || 2 !== count($action_parts)) {
+            return false;
+        }
+        $claim_action = trim($claim_parts[0]);
+        $claim_namespace = trim($claim_parts[1]);
+        $action_action = trim($action_parts[0]);
+        $action_namespace = trim($action_parts[1]);
 
-	/**
-	 * @param string $claim
-	 * @param string $action
-	 * @return bool
-	 */
-	public function checkClaim(string $claim, string $action)
-	{
-		$claim_parts = explode(':', $claim);
-		$action_parts = explode(':', $action);
-		if (count($claim_parts) !== 2 || count($action_parts) !== 2) {
-			return false;
-		}
-		$claim_action = trim($claim_parts[0]);
-		$claim_namespace = trim($claim_parts[1]);
-		$action_action = trim($action_parts[0]);
-		$action_namespace = trim($action_parts[1]);
+        if ($claim_action !== $action_action) {
+            return false;
+        }
 
-		if ( $claim_action !== $action_action) {
-			return false;
-		}
+        if (empty($claim_action) || empty($claim_namespace) || empty($action_action) || empty($action_namespace)) {
+            return false;
+        }
 
-		if (empty($claim_action) || empty($claim_namespace) || empty($action_action) || empty($action_namespace)) {
-			return false;
-		}
+        if ('*' !== $claim_namespace && $claim_namespace !== $action_namespace) {
+            return false;
+        }
 
-		if ($claim_namespace !== '*' && $claim_namespace !== $action_namespace) {
-			return false;
-		}
-
-		return true;
+        return true;
     }
 
-	/**
-	 * @param Request $request
-	 * @return |null
-	 */
+    /**
+     * @param Request $request
+     *
+     * @return string|null
+     */
     public function extractToken(Request $request)
     {
         if (!$request->headers->has('Authorization')) {
