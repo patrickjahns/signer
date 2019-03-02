@@ -2,6 +2,9 @@
     "bamarni/composer-bin-plugin": {
         "version": "v1.2.0"
     },
+    "fgrosse/phpasn1": {
+        "version": "v2.1.1"
+    },
     "pear/archive_tar": {
         "version": "1.4.6"
     },
@@ -28,6 +31,9 @@
     },
     "psr/simple-cache": {
         "version": "1.0.1"
+    },
+    "spomky-labs/base64url": {
+        "version": "v2.0.1"
     },
     "symfony/cache": {
         "version": "v4.2.3"
@@ -129,5 +135,29 @@
     },
     "symfony/yaml": {
         "version": "v4.2.3"
+    },
+    "web-token/jwt-checker": {
+        "version": "v1.3.1"
+    },
+    "web-token/jwt-core": {
+        "version": "v1.3.1"
+    },
+    "web-token/jwt-signature": {
+        "version": "v1.3.1"
+    },
+    "web-token/jwt-signature-algorithm-ecdsa": {
+        "version": "v1.3.1"
+    },
+    "web-token/jwt-signature-algorithm-eddsa": {
+        "version": "v1.3.1"
+    },
+    "web-token/jwt-signature-algorithm-hmac": {
+        "version": "v1.3.1"
+    },
+    "web-token/jwt-signature-algorithm-none": {
+        "version": "v1.3.1"
+    },
+    "web-token/jwt-signature-algorithm-rsa": {
+        "version": "v1.3.1"
     }
 }
