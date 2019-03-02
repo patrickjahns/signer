@@ -29,12 +29,14 @@ use Jose\Component\Checker\ExpirationTimeChecker;
 use Jose\Component\Checker\HeaderCheckerManager;
 use Jose\Component\Checker\IssuedAtChecker;
 use Jose\Component\Checker\NotBeforeChecker;
-use Jose\Component\Core\AlgorithmManagerFactory;
+use Jose\Component\Core\AlgorithmManager;
 use Jose\Component\Core\Converter\StandardConverter;
 use Jose\Component\Core\JWK;
 use Jose\Component\Signature\Algorithm\ES256;
+use Jose\Component\Signature\JWS;
+use Jose\Component\Signature\JWSBuilder;
 use Jose\Component\Signature\JWSTokenSupport;
-use Jose\Component\Signature\JWSVerifierFactory;
+use Jose\Component\Signature\JWSVerifier;
 use Jose\Component\Signature\Serializer\CompactSerializer;
 use Jose\Component\Signature\Serializer\JWSSerializerManager;
 use Symfony\Component\HttpFoundation\Request;
@@ -50,14 +52,53 @@ class JWTSecurity
     private $jwk;
 
     /**
+     * @var AlgorithmManager
+     */
+    private $algorithmManager;
+
+    /**
+     * @var StandardConverter
+     */
+    private $jsonConverter;
+
+    /**
+     * @var JWSBuilder
+     */
+    private $jwsBuilder;
+
+    /**
+     * @var JWSSerializerManager
+     */
+    private $serializerManager;
+
+    /**
      * JWTSecurity constructor.
+     *
+     * @param JWKProvider $JWKProvider
      */
     public function __construct(JWKProvider $JWKProvider)
     {
         $this->jwk = $JWKProvider->getJWK();
+        $this->algorithmManager = AlgorithmManager::create([
+            new ES256(),
+        ]);
+        $this->jsonConverter = new StandardConverter();
+
+        $this->jwsBuilder = new JWSBuilder(
+            $this->jsonConverter,
+            $this->algorithmManager
+        );
+
+        $this->serializerManager = JWSSerializerManager::create([
+            new CompactSerializer($this->jsonConverter),
+        ]);
     }
 
-    //TODO: refactor into smaller functions
+    /**
+     * @param Request $request
+     *
+     * @return bool
+     */
     public function isAuthenticated(Request $request)
     {
         $token = $this->extractToken($request);
@@ -66,47 +107,88 @@ class JWTSecurity
         }
 
         try {
-            $algorithmManagerFactory = new AlgorithmManagerFactory();
-            $algorithmManagerFactory->add('ES256', new ES256());
-            $jwsVerifierFactory = new JWSVerifierFactory($algorithmManagerFactory);
-            $jwsVerifier = $jwsVerifierFactory->create(['ES256']);
+            // get the jws
+            $jws = $this->getJWSFromToken($token);
 
-            // The JSON Converter.
-            $jsonConverter = new StandardConverter();
+            // verify JWS
+            if (!$this->verifyJWS($jws)) {
+                return false;
+            }
 
-            // The serializer manager. We only use the JWS Compact Serialization Mode.
-            $serializerManager = JWSSerializerManager::create([
-                new CompactSerializer($jsonConverter),
-            ]);
+            // verify headers
+            $this->verifyHeaders($jws);
 
-            $jws = $serializerManager->unserialize($token);
-            $jwsVerifier->verifyWithKey($jws, $this->jwk, 0);
-
-            $headerCheckerManager = HeaderCheckerManager::create(
-                [
-                    new AlgorithmChecker(['ES256']), // We check the header "alg" (algorithm)
-                ],
-                [
-                    new JWSTokenSupport(), // Adds JWS token type support
-                ]
-            );
-            $headerCheckerManager->check($jws, 0, ['alg']);
-            $claimCheckerManager = ClaimCheckerManager::create(
-                [
-                    new IssuedAtChecker(),
-                    new NotBeforeChecker(),
-                    new ExpirationTimeChecker(),
-                    new AudienceChecker('signer'),
-                ]
-            );
-
-            $claims = $jsonConverter->decode($jws->getPayload());
-            $claimCheckerManager->check($claims, ['nbf', 'iat', 'iss', 'aud', 'scope', 'jti']);
+            // verify claims
+            $this->verifyClaims($jws);
         } catch (\Exception $e) {
             return false;
         }
 
         return true;
+    }
+
+    /**
+     * @param string $token
+     *
+     * @return JWS
+     *
+     * @throws \Exception
+     */
+    private function getJWSFromToken(string $token): JWS
+    {
+        return $this->serializerManager->unserialize($token);
+    }
+
+    /**
+     * @param JWS $jws
+     *
+     * @return bool
+     */
+    private function verifyJWS(JWS $jws)
+    {
+        $jwsVerifier = new JWSVerifier($this->algorithmManager);
+
+        return $jwsVerifier->verifyWithKey($jws, $this->jwk, 0);
+    }
+
+    /**
+     * @param JWS $jws
+     *
+     * @throws \Jose\Component\Checker\InvalidHeaderException
+     * @throws \Jose\Component\Checker\MissingMandatoryHeaderParameterException
+     */
+    private function verifyHeaders(JWS $jws)
+    {
+        $headerCheckerManager = HeaderCheckerManager::create(
+            [
+                new AlgorithmChecker(['ES256']),
+            ],
+            [
+                new JWSTokenSupport(),
+            ]
+        );
+        $headerCheckerManager->check($jws, 0, ['alg']);
+    }
+
+    /**
+     * @param JWS $jws
+     *
+     * @throws \Jose\Component\Checker\InvalidClaimException
+     * @throws \Jose\Component\Checker\MissingMandatoryClaimException
+     */
+    private function verifyClaims(JWS $jws)
+    {
+        $claimCheckerManager = ClaimCheckerManager::create(
+            [
+                new IssuedAtChecker(),
+                new NotBeforeChecker(),
+                new ExpirationTimeChecker(),
+                new AudienceChecker('signer'),
+            ]
+        );
+
+        $claims = $this->jsonConverter->decode($jws->getPayload());
+        $claimCheckerManager->check($claims, ['nbf', 'iat', 'iss', 'aud', 'scope', 'jti']);
     }
 
     /**
@@ -123,21 +205,18 @@ class JWTSecurity
         if (null === $token) {
             return false;
         }
-        // The JSON Converter.
-        $jsonConverter = new StandardConverter();
 
-        // The serializer manager. We only use the JWS Compact Serialization Mode.
-        $serializerManager = JWSSerializerManager::create([
-            new CompactSerializer($jsonConverter),
-        ]);
-        $jws = $serializerManager->unserialize($token);
-        $claims = $jsonConverter->decode($jws->getPayload());
+        $jws = $this->getJWSFromToken($token);
+        $claims = $this->jsonConverter->decode($jws->getPayload());
+
         if (!array_key_exists('scope', $claims)) {
             return false;
         }
+
         if (!is_array($claims['scope'])) {
             return $this->checkClaim($action, $claims['scope']);
         }
+
         foreach ($claims['scope'] as $scope) {
             if ($this->checkClaim($scope, $action)) {
                 return true;
@@ -197,5 +276,35 @@ class JWTSecurity
         }
 
         return $headerParts[1];
+    }
+
+    /**
+     * @param array  $claims
+     * @param int    $valid
+     * @param string $issuer
+     *
+     * @return string
+     *
+     * @throws \Exception
+     */
+    public function issueToken(array $claims, int $valid, string $issuer): string
+    {
+        $payload = $this->jsonConverter->encode([
+            'jti' => \uniqid('', true),
+            'iat' => time(),
+            'nbf' => time(),
+            'exp' => time() + $valid,
+            'iss' => $issuer,
+            'aud' => 'signer',
+            'scope' => $claims,
+        ]);
+
+        $jws = $this->jwsBuilder
+            ->create()
+            ->withPayload($payload)
+            ->addSignature($this->jwk, ['alg' => 'ES256'])
+            ->build();
+
+        return $this->serializerManager->serialize(CompactSerializer::NAME, $jws, 0);
     }
 }

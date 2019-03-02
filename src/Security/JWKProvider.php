@@ -2,7 +2,6 @@
 
 /**
  * @author Patrick Jahns <github@patrickjahns.de>
- *
  * @copyright Copyright (c) 2019, Patrick Jahns.
  * @license GPL-2.0
  *
@@ -19,7 +18,6 @@
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- *
  */
 
 namespace Signer\Security;
@@ -28,26 +26,26 @@ use Jose\Component\Core\JWK;
 
 class JWKProvider
 {
-	/**
-	 * @var JWK
-	 */
-	private $jwk;
+    /**
+     * @var JWK
+     */
+    private $jwk;
 
-	/**
-	 * JWKProvider constructor.
-	 * @param string $jwk
-	 */
-	public function __construct(string $jwk)
-	{
-		$this->jwk = JWK::createFromJson($jwk);
-	}
+    /**
+     * JWKProvider constructor.
+     *
+     * @param string $jwk
+     */
+    public function __construct(string $jwk)
+    {
+        $this->jwk = JWK::createFromJson($jwk);
+    }
 
-	/**
-	 * @return JWK
-	 */
-	public function getJWK(): JWK
-	{
-		return $this->jwk;
-	}
-
+    /**
+     * @return JWK
+     */
+    public function getJWK(): JWK
+    {
+        return $this->jwk;
+    }
 }

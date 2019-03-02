@@ -23,6 +23,7 @@
 namespace Signer\Tests\Unit\Security;
 
 use PHPUnit\Framework\TestCase;
+use Signer\Security\JWKProvider;
 use Signer\Security\JWTSecurity;
 
 class JWTSecurityTest extends TestCase
@@ -34,7 +35,8 @@ class JWTSecurityTest extends TestCase
 
     public function setUp(): void
     {
-        $this->security = new JWTSecurity();
+        $jwkProvider = $this->createMock(JWKProvider::class);
+        $this->security = new JWTSecurity($jwkProvider);
         parent::setUp();
     }
 

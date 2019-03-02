@@ -80,6 +80,7 @@ class SignController
         if (!$file->isValid()) {
             return new Response(null, Response::HTTP_BAD_REQUEST);
         }
+
         // Extract
         $archiveService = new ArchiveService();
         $path = $archiveService->getTempFolder();
