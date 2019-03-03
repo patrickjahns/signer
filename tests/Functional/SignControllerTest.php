@@ -108,16 +108,14 @@ class SignControllerTest extends ApiTestCase
         $this->assertResponseCode($response, Response::HTTP_BAD_REQUEST);
     }
 
-    //TODO: fixme
     public function test_upload_for_app_with_missing_key()
     {
-        $this->markTestSkipped('fixme');
         $testFile = $this->getTestDataDir() . '/app_missing_key.tar.gz';
         $uploadedFile = new UploadedFile($testFile, 'app_missing_key.tar.gz');
         $client = $this->getAuthenticatedClient($this->getToken(['sign:*']));
         $client->request('POST', '/sign', [], [$uploadedFile]);
         $response = $client->getResponse();
-        $this->assertResponseCode($response, Response::HTTP_BAD_REQUEST);
+        $this->assertResponseCode($response, Response::HTTP_NOT_FOUND);
     }
 
     public function test_upload_for_app_with_bad_infoxml()

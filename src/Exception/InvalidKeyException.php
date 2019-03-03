@@ -22,17 +22,7 @@
 
 namespace Signer\Exception;
 
-use Symfony\Component\HttpFoundation\Response;
-
-class AppException extends \LogicException
+class InvalidKeyException extends AppException
 {
-    protected $statusCode = Response::HTTP_BAD_REQUEST;
-
-    /**
-     * @return int
-     */
-    public function getStatusCode(): int
-    {
-        return $this->statusCode;
-    }
+    protected $statusCode = 404;
 }

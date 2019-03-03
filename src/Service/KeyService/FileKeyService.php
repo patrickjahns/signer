@@ -24,6 +24,7 @@ namespace Signer\Service\KeyService;
 
 use phpseclib\Crypt\RSA;
 use phpseclib\File\X509;
+use Signer\Exception\InvalidKeyException;
 use Signer\Model\OCAppKeySet;
 
 class FileKeyService implements KeyServiceInterface
@@ -50,11 +51,8 @@ class FileKeyService implements KeyServiceInterface
      */
     public function getKeyPairForAppId(string $appId): OCAppKeySet
     {
-        $rsa = new RSA();
-        $rsa->loadKey($this->getRSA($appId));
-        $x509 = new X509();
-        $x509->loadX509($this->getX509($appId));
-        $x509->setPrivateKey($rsa);
+        $rsa = $this->getRSA($appId);
+        $x509 = $this->getX509($appId, $rsa);
 
         return new OCAppKeySet($appId, $rsa, $x509);
     }
@@ -62,30 +60,39 @@ class FileKeyService implements KeyServiceInterface
     /**
      * @param string $appId
      *
-     * @throws \Exception
+     * @return RSA
+     *
+     * @throws InvalidKeyException
      */
-    private function getRSA(string $appId)
+    private function getRSA(string $appId): RSA
     {
         $filepath = $this->searchPath . '/' . $appId . '.key';
         if (!file_exists($filepath)) {
-            throw new \Exception('KEY not found');
+            throw new InvalidKeyException('no key found');
         }
+        $rsa = new RSA();
+        $rsa->loadKey(file_get_contents($filepath));
 
-        return file_get_contents($filepath);
+        return $rsa;
     }
 
     /**
      * @param string $appId
      *
-     * @throws \Exception
+     * @return X509
+     *
+     * @throws InvalidKeyException
      */
-    private function getX509(string $appId)
+    private function getX509(string $appId, RSA $rsa)
     {
         $filepath = $this->searchPath . '/' . $appId . '.crt';
         if (!file_exists($filepath)) {
-            throw new \Exception('CRT not found');
+            throw new InvalidKeyException('no key found');
         }
+        $x509 = new X509();
+        $x509->loadX509(file_get_contents($filepath));
+        $x509->setPrivateKey($rsa);
 
-        return file_get_contents($filepath);
+        return $x509;
     }
 }
