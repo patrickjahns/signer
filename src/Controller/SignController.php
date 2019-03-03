@@ -32,6 +32,9 @@ use Symfony\Component\HttpFoundation\FileBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class SignController
 {
@@ -66,19 +69,19 @@ class SignController
     public function sign(Request $request)
     {
         if (!$this->security->isAuthenticated($request)) {
-            return new Response(null, Response::HTTP_UNAUTHORIZED);
+            throw new UnauthorizedHttpException('Bearer');
         }
 
         /** @var FileBag $files */
         $files = $request->files->all();
         if (count($files) > 1 || 0 === count($files)) {
-            return new Response(null, Response::HTTP_BAD_REQUEST);
+            throw new BadRequestHttpException();
         }
         /** @var UploadedFile $file */
         $file = array_shift($files);
 
         if (!$file->isValid()) {
-            return new Response(null, Response::HTTP_BAD_REQUEST);
+            throw new BadRequestHttpException();
         }
 
         // Extract
@@ -94,7 +97,7 @@ class SignController
 
         // check if the given token is authorized to perform the action
         if (!$this->security->isAuthorizedToPerform($request, 'sign:' . $appInfo->getId())) {
-            return new Response(null, Response::HTTP_FORBIDDEN);
+            throw new AccessDeniedHttpException();
         }
 
         // sign app
