@@ -24,26 +24,67 @@ namespace Signer\Model;
 
 class OCApp
 {
+    /**
+     * @var string
+     */
     private $id;
 
+    /**
+     * @var string
+     */
     private $version;
 
-    public function __construct(array $values)
+    /**
+     * @var string
+     */
+    private $appPath;
+
+    /**
+     * OCApp constructor.
+     *
+     * @param array $values
+     * @param $appPath
+     *
+     * @throws \Exception
+     */
+    public function __construct(array $values, $appPath)
     {
         $this->setValueFromArray($values, 'id', true);
         $this->setValueFromArray($values, 'version', true);
+        $this->appPath = $appPath;
     }
 
-    public function getVersion()
+    /**
+     * @return string
+     */
+    public function getVersion(): string
     {
         return $this->version;
     }
 
-    public function getId()
+    /**
+     * @return string
+     */
+    public function getId(): string
     {
         return $this->id;
     }
 
+    /**
+     * @return string
+     */
+    public function getAppPath(): string
+    {
+        return $this->appPath;
+    }
+
+    /**
+     * @param $array
+     * @param $key
+     * @param bool $mandatory
+     *
+     * @throws \Exception
+     */
     private function setValueFromArray($array, $key, $mandatory = false)
     {
         if (!array_key_exists($key, $array)) {

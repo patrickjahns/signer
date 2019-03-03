@@ -25,7 +25,7 @@ namespace Signer\Controller;
 use Signer\Security\JWTSecurity;
 use Signer\Service\ArchiveService;
 use Signer\Service\CodeSignService;
-use Signer\Service\OCAppService;
+use Signer\Service\OCAppFactory;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\FileBag;
@@ -90,10 +90,7 @@ class SignController
         $archiveService->extract($file, $path);
 
         // Load information on the app
-        $infoFile = OCAppService::findAppInfoXML($path);
-        $xmlString = OCAppService::getAppXMLAsString($infoFile);
-        $appInfo = OCAppService::createFromXMLString($xmlString);
-        $appPath = $path . '/' . $appInfo->getId();
+        $appInfo = OCAppFactory::fromPath($path);
 
         // check if the given token is authorized to perform the action
         if (!$this->security->isAuthorizedToPerform($request, 'sign:' . $appInfo->getId())) {
@@ -101,11 +98,11 @@ class SignController
         }
 
         // sign app
-        $this->codeSignService->signApp($appPath, $appInfo->getId());
+        $this->codeSignService->signApp($appInfo->getAppPath(), $appInfo->getId());
 
         // compress signed app
         $archiveName = $appInfo->getId() . '-' . $appInfo->getVersion() . '.tar.gz';
-        $newArchive = $archiveService->compress($appPath, $archiveName);
+        $newArchive = $archiveService->compress($appInfo->getAppPath(), $archiveName);
 
         $response = new BinaryFileResponse($newArchive);
         $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_INLINE, $archiveName, $archiveName);

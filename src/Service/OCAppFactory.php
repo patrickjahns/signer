@@ -22,35 +22,43 @@
 
 namespace Signer\Service;
 
+use Signer\Exception\InvalidAppArchive;
 use Signer\Model\OCApp;
-use Symfony\Component\Finder\Finder;
 
-class OCAppService
+class OCAppFactory
 {
-    public static function createFromXMLString($xmlstring)
-    {
-        $xml = simplexml_load_string($xmlstring, 'SimpleXMLElement', LIBXML_NOCDATA);
-        $json = json_encode($xml);
-        $array = json_decode($json, true);
+    const APP_INFO_PATH = 'appinfo/info.xml';
 
-        return new OCApp($array);
+    /**
+     * @param $path
+     *
+     * @return OCApp
+     *
+     * @throws \Exception
+     */
+    public static function fromPath($path)
+    {
+        $xmlPath = self::getAppPath($path) . '/' . self::APP_INFO_PATH;
+        $appInfoReader = new AppInfoReader($xmlPath);
+        $xmlArray = json_decode(json_encode($appInfoReader->getXML()), true);
+
+        return new OCApp($xmlArray, self::getAppPath($path));
     }
 
-    public static function findAppInfoXML($path)
+    /**
+     * @param $path
+     *
+     * @return string
+     *
+     * @throws \Exception
+     */
+    public static function getAppPath($path)
     {
-        $finder = new Finder();
-        $finder->in($path);
-        $files = $finder->files()->name('info.xml');
-        if (1 != count($files)) {
-            throw new \RuntimeException('invalid app');
+        $dirs = array_diff(scandir($path, true), ['..', '.']);
+        if (1 !== count($dirs)) {
+            throw new InvalidAppArchive('could not determine app directory');
         }
-        foreach ($files as $file) {
-            return $file->getPathname();
-        }
-    }
 
-    public static function getAppXMLAsString($path)
-    {
-        return file_get_contents($path);
+        return $path . '/' . $dirs[0];
     }
 }
