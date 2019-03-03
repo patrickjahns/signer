@@ -1,5 +1,6 @@
 {
   "require": {
-    "phpunit/phpunit": "^8.0"
+    "phpunit/phpunit": "^7.5",
+    "phpunit/php-invoker": "^2.0"
   }
 }
