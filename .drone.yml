@@ -23,4 +23,9 @@ steps:
   - name: unit-tests
     image: php:7.3-cli
     commands:
-      - php vendor-bin/phpunit/vendor/bin/phpunit
+      - php vendor-bin/phpunit/vendor/bin/phpunit  --testsuite unit
+
+  - name: functional-tests
+    image: php:7.3-cli
+    commands:
+      - php vendor-bin/phpunit/vendor/bin/phpunit  --testsuite functional
