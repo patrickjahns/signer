@@ -100,7 +100,7 @@ class JWTSecurity
      * @return bool
      */
     public function isAuthenticated(Request $request): bool
-	{
+    {
         $token = $this->extractToken($request);
         if (null === $token) {
             return false;
@@ -145,7 +145,7 @@ class JWTSecurity
      * @return bool
      */
     private function verifyJWS(JWS $jws): bool
-	{
+    {
         $jwsVerifier = new JWSVerifier($this->algorithmManager);
 
         return $jwsVerifier->verifyWithKey($jws, $this->jwk, 0);
@@ -158,7 +158,7 @@ class JWTSecurity
      * @throws \Jose\Component\Checker\MissingMandatoryHeaderParameterException
      */
     private function verifyHeaders(JWS $jws): void
-	{
+    {
         $headerCheckerManager = HeaderCheckerManager::create(
             [
                 new AlgorithmChecker(['ES256']),
@@ -177,7 +177,7 @@ class JWTSecurity
      * @throws \Jose\Component\Checker\MissingMandatoryClaimException
      */
     private function verifyClaims(JWS $jws): void
-	{
+    {
         $claimCheckerManager = ClaimCheckerManager::create(
             [
                 new IssuedAtChecker(),
@@ -200,7 +200,7 @@ class JWTSecurity
      * @throws \Exception
      */
     public function isAuthorizedToPerform(Request $request, string $action): bool
-	{
+    {
         $token = $this->extractToken($request);
         if (null === $token) {
             return false;
@@ -233,7 +233,7 @@ class JWTSecurity
      * @return bool
      */
     public function checkClaim(string $claim, string $action): bool
-	{
+    {
         $claim_parts = explode(':', $claim);
         $action_parts = explode(':', $action);
         if (2 !== count($claim_parts) || 2 !== count($action_parts)) {
@@ -265,7 +265,7 @@ class JWTSecurity
      * @return string|null
      */
     public function extractToken(Request $request): ?string
-	{
+    {
         if (!$request->headers->has('Authorization')) {
             return null;
         }
