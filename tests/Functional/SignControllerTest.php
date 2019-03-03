@@ -78,6 +78,66 @@ class SignControllerTest extends ApiTestCase
         $this->assertResponseCode($response, Response::HTTP_OK);
     }
 
+    // TODO: fixme
+    public function test_upload_with_invalid_archive()
+    {
+        $this->markTestSkipped('fixme');
+        $testFile = $this->getTestDataDir() . '/bad_archive.tar.gz';
+        $uploadedFile = new UploadedFile($testFile, 'bad_archive.tar.gz');
+        $client = $this->getAuthenticatedClient($this->getToken(['sign:*']));
+        $client->request('POST', '/sign', [], [$uploadedFile]);
+        $response = $client->getResponse();
+        $this->assertResponseCode($response, Response::HTTP_BAD_REQUEST);
+    }
+
+    //TODO: fixme
+    public function test_upload_app_with_missing_appinfo()
+    {
+        $this->markTestSkipped('fixme');
+        $testFile = $this->getTestDataDir() . '/bad_app.tar.gz';
+        $uploadedFile = new UploadedFile($testFile, 'bad_app.tar.gz');
+        $client = $this->getAuthenticatedClient($this->getToken(['sign:*']));
+        $client->request('POST', '/sign', [], [$uploadedFile]);
+        $response = $client->getResponse();
+        $this->assertResponseCode($response, Response::HTTP_BAD_REQUEST);
+    }
+
+    //TODO: fixme
+    public function test_upload_app_with_bad_appinfo()
+    {
+        $this->markTestSkipped('fixme');
+        $testFile = $this->getTestDataDir() . '/bad_appinfo.tar.gz';
+        $uploadedFile = new UploadedFile($testFile, 'bad_appinfo.tar.gz');
+        $client = $this->getAuthenticatedClient($this->getToken(['sign:*']));
+        $client->request('POST', '/sign', [], [$uploadedFile]);
+        $response = $client->getResponse();
+        $this->assertResponseCode($response, Response::HTTP_BAD_REQUEST);
+    }
+
+    //TODO: fixme
+    public function test_upload_for_app_with_missing_key()
+    {
+        $this->markTestSkipped('fixme');
+        $testFile = $this->getTestDataDir() . '/app_missing_key.tar.gz';
+        $uploadedFile = new UploadedFile($testFile, 'app_missing_key.tar.gz');
+        $client = $this->getAuthenticatedClient($this->getToken(['sign:*']));
+        $client->request('POST', '/sign', [], [$uploadedFile]);
+        $response = $client->getResponse();
+        $this->assertResponseCode($response, Response::HTTP_BAD_REQUEST);
+    }
+
+    //TODO: fixme
+    public function test_upload_for_app_with_missing_bad_infoxml()
+    {
+        $this->markTestSkipped('fixme');
+        $testFile = $this->getTestDataDir() . '/bad_infoxml.tar.gz';
+        $uploadedFile = new UploadedFile($testFile, 'bad_infoxml.tar.gz');
+        $client = $this->getAuthenticatedClient($this->getToken(['sign:*']));
+        $client->request('POST', '/sign', [], [$uploadedFile]);
+        $response = $client->getResponse();
+        $this->assertResponseCode($response, Response::HTTP_BAD_REQUEST);
+    }
+
     protected function getAuthenticatedClient($token)
     {
         return self::createClient([], [
