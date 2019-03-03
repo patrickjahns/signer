@@ -26,10 +26,11 @@ use phpseclib\Crypt\RSA;
 use Signer\Model\OCAppKeySet;
 use Signer\Service\KeyService\KeyServiceInterface;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\Finder\SplFileInfo;
 
 class CodeSignService
 {
-    public const SIGNATURE_FILE = '/appinfo/signature.json';
+    public const SIGNATURE_FILE = 'appinfo/signature.json';
 
     /**
      * @var KeyServiceInterface
@@ -57,7 +58,7 @@ class CodeSignService
         $keySet = $this->keyService->getKeyPairForAppId($appId);
         $hashes = $this->getHashesForPath($path);
         $signature = $this->createSignature($hashes, $keySet);
-        $this->writeSignature($signature, $path . self::SIGNATURE_FILE);
+        $this->writeSignature($signature, $path . '/' . self::SIGNATURE_FILE);
     }
 
     /**
@@ -67,8 +68,17 @@ class CodeSignService
      */
     public function getHashesForPath(string $appPath): array
     {
+        $filter = function (\SplFileInfo $file) {
+            if (!$file instanceof SplFileInfo) {
+                return;
+            }
+            if (0 === strcmp($file->getRelativePathname(), self::SIGNATURE_FILE)) {
+                return false;
+            }
+        };
+
         $finder = new Finder();
-        $finder->in($appPath)->files()->notName('signature.json');
+        $finder->in($appPath)->files()->filter($filter);
         $hashes = [];
         foreach ($finder as $file) {
             $hashes[$file->getRelativePathname()] = hash_file('sha512', $file->getPathname());
