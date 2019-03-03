@@ -46,6 +46,12 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class JWTSecurity
 {
+
+	/**
+	 * @var ES256
+	 */
+	private $algorithm;
+
     /**
      * @var JWK
      */
@@ -79,8 +85,9 @@ class JWTSecurity
     public function __construct(JWKProvider $JWKProvider)
     {
         $this->jwk = $JWKProvider->getJWK();
+        $this->algorithm = new ES256();
         $this->algorithmManager = AlgorithmManager::create([
-            new ES256(),
+            $this->algorithm
         ]);
         $this->jsonConverter = new StandardConverter();
 
@@ -161,7 +168,7 @@ class JWTSecurity
     {
         $headerCheckerManager = HeaderCheckerManager::create(
             [
-                new AlgorithmChecker(['ES256']),
+                new AlgorithmChecker([$this->algorithm->name()]),
             ],
             [
                 new JWSTokenSupport(),
@@ -302,7 +309,7 @@ class JWTSecurity
         $jws = $this->jwsBuilder
             ->create()
             ->withPayload($payload)
-            ->addSignature($this->jwk, ['alg' => 'ES256'])
+            ->addSignature($this->jwk, ['alg' => $this->algorithm->name()])
             ->build();
 
         return $this->serializerManager->serialize(CompactSerializer::NAME, $jws, 0);
