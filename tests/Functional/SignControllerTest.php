@@ -68,6 +68,16 @@ class SignControllerTest extends ApiTestCase
         $this->assertJsonHeader($response);
     }
 
+    public function test_upload_with_valid_archive_and_correct_claims()
+    {
+        $testFile = $this->getTestDataDir() . '/theme-example.tar.gz';
+        $uploadedFile = new UploadedFile($testFile, 'theme-example.tar.gz');
+        $client = $this->getAuthenticatedClient($this->getToken(['sign:*']));
+        $client->request('POST', '/sign', [], [$uploadedFile]);
+        $response = $client->getResponse();
+        $this->assertResponseCode($response, Response::HTTP_OK);
+    }
+
     protected function getAuthenticatedClient($token)
     {
         return self::createClient([], [
@@ -81,7 +91,7 @@ class SignControllerTest extends ApiTestCase
         $container = $this->getTestContainer();
         $tokenSecurity = $container->get(JWTSecurity::class);
 
-        return $tokenSecurity->issueToken([], 3600, 'tester');
+        return $tokenSecurity->issueToken($claims, 3600, 'tester');
     }
 
     protected function getTestDataDir()
