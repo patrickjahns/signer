@@ -46,11 +46,10 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class JWTSecurity
 {
-
-	/**
-	 * @var ES256
-	 */
-	private $algorithm;
+    /**
+     * @var ES256
+     */
+    private $algorithm;
 
     /**
      * @var JWK
@@ -87,7 +86,7 @@ class JWTSecurity
         $this->jwk = $JWKProvider->getJWK();
         $this->algorithm = new ES256();
         $this->algorithmManager = AlgorithmManager::create([
-            $this->algorithm
+            $this->algorithm,
         ]);
         $this->jsonConverter = new StandardConverter();
 

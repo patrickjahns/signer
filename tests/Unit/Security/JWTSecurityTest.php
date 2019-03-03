@@ -22,12 +22,25 @@
 
 namespace Signer\Tests\Unit\Security;
 
+use Jose\Component\Core\JWK;
 use PHPUnit\Framework\TestCase;
 use Signer\Security\JWKProvider;
 use Signer\Security\JWTSecurity;
+use Symfony\Component\HttpFoundation\HeaderBag;
+use Symfony\Component\HttpFoundation\Request;
 
 class JWTSecurityTest extends TestCase
 {
+    const JWK = [
+        'kid' => '-fctYHOgAMQaF-6OPs3W4BNdGWaFHWVrR6EZYNJXsU0',
+        'use' => 'sig',
+        'kty' => 'EC',
+        'crv' => 'P-256',
+        'x' => 'GhtY2XAH1sKT-Afom7M64AkkY51erDAqEVvBILyWXQo',
+        'y' => 'WwyRaSxWdUUyrDCh-MVWi0LYTPOejDoPFoC5VvyU_OQ',
+        'd' => '_s3V8kBCjXGnect5Seh-B1RjUiRgI8MTjGoggYCe5Q8',
+    ];
+
     /**
      * @var JWTSecurity
      */
@@ -36,8 +49,61 @@ class JWTSecurityTest extends TestCase
     public function setUp(): void
     {
         $jwkProvider = $this->createMock(JWKProvider::class);
+        $jwkProvider
+            ->method('getJWK')
+            ->willReturn(JWK::create(self::JWK));
         $this->security = new JWTSecurity($jwkProvider);
         parent::setUp();
+    }
+
+    public function testIssueToken()
+    {
+        $token = $this->security->issueToken([], 3600, 'signer');
+        self::assertIsString($token);
+    }
+
+    public function testExtractTokenWithMissingHeader()
+    {
+        $request = $this->createMock(Request::class);
+        $headerBag = $this->createMock(HeaderBag::class);
+        $headerBag
+            ->method('has')
+            ->with('Authorization')
+            ->willReturn(false);
+        $request->headers = $headerBag;
+        $token = $this->security->extractToken($request);
+        $this->assertNull($token);
+    }
+
+    /**
+     * @dataProvider headerProvider
+     */
+    public function testExtractToken($header, $expected)
+    {
+        $request = $this->createMock(Request::class);
+        $headerBag = $this->createMock(HeaderBag::class);
+        $headerBag
+            ->method('has')
+            ->with('Authorization')
+            ->willReturn(true);
+        $headerBag
+            ->method('get')
+            ->with('Authorization')
+            ->willReturn($header);
+        $request->headers = $headerBag;
+        $token = $this->security->extractToken($request);
+        $this->assertSame($expected, $token);
+    }
+
+    public function headerProvider()
+    {
+        return [
+            'empty header' => ['', null],
+            'just bearer verb' => ['Bearer', null],
+            'wrong verb' => ['ME', null],
+            'wrong verb has token' => ['ME token', null],
+            'has token' => ['Bearer token', 'token'],
+        ];
     }
 
     /**
