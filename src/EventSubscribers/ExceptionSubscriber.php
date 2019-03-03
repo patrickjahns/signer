@@ -34,17 +34,26 @@ class ExceptionSubscriber implements EventSubscriberInterface
     public function onKernelException(GetResponseForExceptionEvent $event)
     {
         $e = $event->getException();
-        if (!$e instanceof HttpException) {
+        if ($e instanceof HttpException) {
+            $response = new JsonResponse([
+                    'error' => $this->getStatusText($e->getStatusCode()),
+                    'code' => $e->getStatusCode(),
+                ],
+                $e->getStatusCode(),
+                $e->getHeaders()
+            );
+
+            $event->setResponse($response);
+
             return;
         }
-        $response = new JsonResponse([
-                'error' => $this->getStatusText($e->getStatusCode()),
-                'code' => $e->getStatusCode(),
+        $response = new JsonResponse(
+            [
+                'error' => $this->getStatusText(Response::HTTP_INTERNAL_SERVER_ERROR),
+                'code' => Response::HTTP_INTERNAL_SERVER_ERROR,
             ],
-            $e->getStatusCode(),
-            $e->getHeaders()
+            Response::HTTP_INTERNAL_SERVER_ERROR
         );
-
         $event->setResponse($response);
     }
 
