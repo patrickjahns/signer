@@ -194,7 +194,7 @@ class JWTSecurity
         );
 
         $claims = $this->jsonConverter->decode($jws->getPayload());
-        $claimCheckerManager->check($claims, ['nbf', 'iat', 'iss', 'aud', 'scope', 'jti']);
+        $claimCheckerManager->check($claims, ['nbf', 'iat', 'iss', 'aud', 'scope', 'jti', 'sub']);
     }
 
     /**
@@ -293,9 +293,10 @@ class JWTSecurity
      *
      * @throws \Exception
      */
-    public function issueToken(array $claims, int $valid, string $issuer): string
+    public function issueToken(array $claims, int $valid, string $issuer, string $subject): string
     {
         $payload = $this->jsonConverter->encode([
+            'sub' => $subject,
             'jti' => \uniqid('', true),
             'iat' => time(),
             'nbf' => time(),

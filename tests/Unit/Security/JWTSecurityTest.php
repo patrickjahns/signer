@@ -58,7 +58,7 @@ class JWTSecurityTest extends TestCase
 
     public function testIssueToken()
     {
-        $token = $this->security->issueToken([], 3600, 'signer');
+        $token = $this->security->issueToken([], 3600, 'signer', 'tester');
         self::assertIsString($token);
     }
 

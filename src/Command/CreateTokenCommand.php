@@ -49,6 +49,7 @@ class CreateTokenCommand extends Command
         $this
             ->setDescription('Creates a token')
             ->setHelp('This command allows to create new JWT to be used with the signer')
+            ->addArgument('subject', InputArgument::REQUIRED, 'subject for whom the token is issued')
             ->addArgument('claims', InputArgument::IS_ARRAY | InputArgument::REQUIRED, 'claims for the token')
             ->addOption('valid', null, InputOption::VALUE_REQUIRED, 'amount of seconds the token is valid [default: 315360000 seconds]', 315360000);
     }
@@ -56,8 +57,9 @@ class CreateTokenCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $claims = $input->getArgument('claims');
+        $subject = $input->getArgument('subject');
         $valid = $input->getOption('valid');
-        $token = $this->security->issueToken($claims, $valid, 'signer-cli');
+        $token = $this->security->issueToken($claims, $valid, 'signer-cli', $subject);
         $output->writeln($token);
     }
 }

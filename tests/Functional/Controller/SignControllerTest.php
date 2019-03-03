@@ -141,7 +141,7 @@ class SignControllerTest extends ApiTestCase
         $container = $this->getTestContainer();
         $tokenSecurity = $container->get(JWTSecurity::class);
 
-        return $tokenSecurity->issueToken($claims, 3600, 'tester');
+        return $tokenSecurity->issueToken($claims, 3600, 'tester', 'tester');
     }
 
     protected function getTestDataDir()
