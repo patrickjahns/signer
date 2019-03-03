@@ -22,6 +22,8 @@
 
 namespace Signer\Model;
 
+use Signer\Exception\InvalidAppArchive;
+
 class OCApp
 {
     /**
@@ -91,7 +93,7 @@ class OCApp
             if (false === $mandatory) {
                 return;
             }
-            throw new \Exception('missing mandatory value');
+            throw new InvalidAppArchive('missing info from info.xml');
         }
         $this->$key = $array[$key];
     }

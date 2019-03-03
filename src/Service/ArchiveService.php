@@ -22,6 +22,7 @@
 
 namespace Signer\Service;
 
+use Signer\Exception\InvalidAppArchive;
 use Symfony\Component\Finder\Finder;
 
 class ArchiveService
@@ -31,7 +32,7 @@ class ArchiveService
         $archive = new \Archive_Tar($file->getPathname());
         $archive->extract($targetFolder);
         if (!file_exists($targetFolder)) {
-            throw new \Exception('could not extract archive');
+            throw new InvalidAppArchive('archive could not be extracted');
         }
     }
 

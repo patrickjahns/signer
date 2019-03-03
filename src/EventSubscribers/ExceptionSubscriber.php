@@ -22,6 +22,7 @@
 
 namespace Signer\EventSubscribers;
 
+use Signer\Exception\AppException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -47,6 +48,20 @@ class ExceptionSubscriber implements EventSubscriberInterface
 
             return;
         }
+
+        if ($e instanceof AppException) {
+            $response = new JsonResponse([
+                'error' => $e->getMessage(),
+                'code' => $e->getStatusCode(),
+                ],
+                $e->getStatusCode(),
+            );
+
+            $event->setResponse($response);
+
+            return;
+        }
+
         $response = new JsonResponse(
             [
                 'error' => $this->getStatusText(Response::HTTP_INTERNAL_SERVER_ERROR),

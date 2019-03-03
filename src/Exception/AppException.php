@@ -22,6 +22,17 @@
 
 namespace Signer\Exception;
 
-class InvalidAppArchive extends AppException
+use Symfony\Component\HttpFoundation\Response;
+
+class AppException extends \LogicException
 {
+    const DEFAULT_CODE = Response::HTTP_BAD_REQUEST;
+
+    /**
+     * @return int
+     */
+    public function getStatusCode(): int
+    {
+        return self::DEFAULT_CODE;
+    }
 }
