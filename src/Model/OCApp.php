@@ -44,8 +44,8 @@ class OCApp
     /**
      * OCApp constructor.
      *
-     * @param array $values
-     * @param $appPath
+     * @param array  $values
+     * @param string $appPath
      *
      * @throws \Exception
      */
@@ -81,9 +81,9 @@ class OCApp
     }
 
     /**
-     * @param $array
-     * @param $key
-     * @param bool $mandatory
+     * @param array  $array
+     * @param string $key
+     * @param bool   $mandatory
      *
      * @throws \Exception
      */

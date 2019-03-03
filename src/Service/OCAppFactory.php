@@ -30,7 +30,7 @@ class OCAppFactory
     const APP_INFO_PATH = 'appinfo/info.xml';
 
     /**
-     * @param $path
+     * @param string $path
      *
      * @return OCApp
      *
@@ -46,7 +46,7 @@ class OCAppFactory
     }
 
     /**
-     * @param $path
+     * @param string $path
      *
      * @return string
      *
