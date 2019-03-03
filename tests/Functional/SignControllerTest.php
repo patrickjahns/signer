@@ -22,6 +22,9 @@
 
 namespace Signer\Tests\Functional;
 
+use Signer\Security\JWTSecurity;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Response;
 
 class SignControllerTest extends ApiTestCase
@@ -43,6 +46,52 @@ class SignControllerTest extends ApiTestCase
         $response = $this->client->getResponse();
         $this->assertResponseCode($response, Response::HTTP_METHOD_NOT_ALLOWED);
         $this->assertJsonHeader($response);
+    }
+
+    public function test_missing_upload_results_in_error()
+    {
+        $client = $this->getAuthenticatedClient($this->getToken());
+        $client->request('POST', '/sign');
+        $response = $client->getResponse();
+        $this->assertResponseCode($response, Response::HTTP_BAD_REQUEST);
+        $this->assertJsonHeader($response);
+    }
+
+    public function test_upload_with_valid_archive_not_enough_permissions()
+    {
+        $testFile = $this->getTestDataDir() . '/theme-example.tar.gz';
+        $uploadedFile = new UploadedFile($testFile, 'theme-example.tar.gz');
+        $client = $this->getAuthenticatedClient($this->getToken());
+        $client->request('POST', '/sign', [], [$uploadedFile]);
+        $response = $client->getResponse();
+        $this->assertResponseCode($response, Response::HTTP_FORBIDDEN);
+        $this->assertJsonHeader($response);
+    }
+
+    protected function getAuthenticatedClient($token)
+    {
+        return self::createClient([], [
+            'HTTP_ACCEPT' => 'application/json',
+            'HTTP_Authorization' => 'Bearer ' . $token,
+        ]);
+    }
+
+    protected function getToken($claims = [])
+    {
+        $container = $this->getTestContainer();
+        $tokenSecurity = $container->get(JWTSecurity::class);
+
+        return $tokenSecurity->issueToken([], 3600, 'tester');
+    }
+
+    protected function getTestDataDir()
+    {
+        return self::$kernel->getProjectDir() . '/tests/data';
+    }
+
+    protected function getTestContainer(): ContainerInterface
+    {
+        return self::$kernel->getContainer()->get('test.service_container');
     }
 
     public function httpMethodProvider()
