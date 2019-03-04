@@ -25,7 +25,9 @@ namespace Signer\Tests\Unit\Service\KeyService;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 use PHPUnit\Framework\TestCase;
+use Signer\Model\OCAppKeySet;
 use Signer\Service\KeyService\FileKeyService;
+use Signer\Tests\Helper\KeyHelper;
 
 class FileKeyServiceTest extends TestCase
 {
@@ -39,14 +41,22 @@ class FileKeyServiceTest extends TestCase
         // define my virtual file system
         $directory = [
             'keys' => [
-                'app.key' => '',
-                'app.crt' => '',
+                'app.key' => KeyHelper::RSA_KEY,
+                'app.crt' => KeyHelper::RSA_CERT,
             ],
             'no-keys' => [],
             'rsa' => [
-                'app.key' => '',
+                'app.key' => KeyHelper::RSA_KEY,
             ],
             'cert' => [
+                'app.crt' => KeyHelper::RSA_CERT,
+            ],
+            'invalid-rsa' => [
+                'app.key' => '',
+                'app.crt' => KeyHelper::RSA_CERT,
+            ],
+            'invalid-cert' => [
+                'app.key' => KeyHelper::RSA_KEY,
                 'app.crt' => '',
             ],
         ];
@@ -61,5 +71,48 @@ class FileKeyServiceTest extends TestCase
     {
         $keyService = new FileKeyService($this->filesystem->url() . '/no-keys');
         $keyService->getKeyPairForAppId('test');
+    }
+
+    public function test_it_will_return_a_key_pair()
+    {
+        $keyService = new FileKeyService($this->filesystem->url() . '/keys');
+        $keyPair = $keyService->getKeyPairForAppId('app');
+        $this->assertInstanceOf(OCAppKeySet::class, $keyPair);
+    }
+
+    /**
+     * @expectedException \Signer\Exception\InvalidKeyException
+     */
+    public function test_it_will_throw_an_error_when_cert_is_missing()
+    {
+        $keyService = new FileKeyService($this->filesystem->url() . '/rsa');
+        $keyPair = $keyService->getKeyPairForAppId('app');
+    }
+
+    /**
+     * @expectedException \Signer\Exception\InvalidKeyException
+     */
+    public function test_it_will_throw_an_error_when_key_is_missing()
+    {
+        $keyService = new FileKeyService($this->filesystem->url() . '/cert');
+        $keyPair = $keyService->getKeyPairForAppId('app');
+    }
+
+    /**
+     * @expectedException \RuntimeException
+     */
+    public function test_it_will_throw_an_error_when_key_is_invalid()
+    {
+        $keyService = new FileKeyService($this->filesystem->url() . '/invalid-rsa');
+        $keyPair = $keyService->getKeyPairForAppId('app');
+    }
+
+    /**
+     * @expectedException \RuntimeException
+     */
+    public function test_it_will_throw_an_error_when_cert_is_invalid()
+    {
+        $keyService = new FileKeyService($this->filesystem->url() . '/invalid-cert');
+        $keyPair = $keyService->getKeyPairForAppId('app');
     }
 }

@@ -71,7 +71,9 @@ class FileKeyService implements KeyServiceInterface
             throw new InvalidKeyException('no key found');
         }
         $rsa = new RSA();
-        $rsa->loadKey(file_get_contents($filepath));
+        if (!$rsa->loadKey(file_get_contents($filepath))) {
+            throw new \RuntimeException('invalid key');
+        }
 
         return $rsa;
     }
@@ -89,9 +91,13 @@ class FileKeyService implements KeyServiceInterface
         if (!file_exists($filepath)) {
             throw new InvalidKeyException('no key found');
         }
-        $x509 = new X509();
-        $x509->loadX509(file_get_contents($filepath));
-        $x509->setPrivateKey($rsa);
+        try {
+            $x509 = new X509();
+            $x509->loadX509(file_get_contents($filepath));
+            $x509->setPrivateKey($rsa);
+        } catch (\Exception $e) {
+            throw new \RuntimeException('invalid key');
+        }
 
         return $x509;
     }
