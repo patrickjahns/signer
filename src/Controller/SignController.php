@@ -72,13 +72,12 @@ class SignController
             throw new UnauthorizedHttpException('Bearer');
         }
 
-        /** @var FileBag $files */
-        $files = $request->files->all();
-        if (count($files) > 1 || 0 === count($files)) {
+        /** @var array $files */
+        if (count($request->files) > 1 || 0 === count($request->files)) {
             throw new BadRequestHttpException();
         }
         /** @var UploadedFile $file */
-        $file = array_shift($files);
+        $file = $request->files->getIterator()->current();
 
         if (!$file->isValid()) {
             throw new BadRequestHttpException();

@@ -54,7 +54,7 @@ class OCAppFactory
      */
     public static function getAppPath($path)
     {
-        $dirs = array_diff(scandir($path, true), ['..', '.']);
+        $dirs = array_diff(scandir($path, 1), ['..', '.']);
         if (1 !== count($dirs)) {
             throw new InvalidAppArchive('could not determine app directory');
         }

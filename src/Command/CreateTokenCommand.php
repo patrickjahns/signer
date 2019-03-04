@@ -58,7 +58,7 @@ class CreateTokenCommand extends Command
     {
         $claims = $input->getArgument('claims');
         $subject = $input->getArgument('subject');
-        $valid = $input->getOption('valid');
+        $valid = (int) $input->getOption('valid');
         $token = $this->security->issueToken($claims, $valid, 'signer-cli', $subject);
         $output->writeln($token);
     }

@@ -18,7 +18,7 @@ steps:
   - name: static-code-analysis
     image: php:7.3-cli
     commands:
-      - php vendor-bin/phpstan/vendor/bin/phpstan analyse -l 4
+      - php vendor-bin/phpstan/vendor/bin/phpstan analyse -l 5
 
   - name: unit-tests
     image: php:7.3-cli
