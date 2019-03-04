@@ -1,5 +1,14 @@
 {
     "type": "project",
+    "name": "patrickjahns/signer",
+    "description": "ownCloud code signing as a service",
+    "authors": [
+        {
+            "name": "Patrick Jahns",
+            "email": "github@patrickjahns.de",
+            "homepage": "https://github.com/patrickjahns"
+        }
+    ],
     "license": "proprietary",
     "require": {
         "php": "^7.1.3",

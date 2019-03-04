@@ -1,7 +1,9 @@
 {
+  "name": "vendor-bin/phpunit",
+  "description": "seperated composer file for cli tools",
   "require": {
     "phpunit/phpunit": "^7.5",
     "symfony/browser-kit": "^4.2",
-    "mikey179/vfsStream": "^1.6"
+    "mikey179/vfsstream": "^1.6"
   }
 }

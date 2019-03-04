@@ -1,4 +1,6 @@
 {
+  "name": "vendor-bin/codestyle",
+  "description": "seperated composer file for cli tools",
   "require": {
     "friendsofphp/php-cs-fixer": "^2.14"
   }

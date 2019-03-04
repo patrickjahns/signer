@@ -1,4 +1,6 @@
 {
+  "name": "vendor-bin/phpstan",
+  "description": "seperated composer file for cli tools",
   "require": {
     "phpstan/phpstan": "^0.11",
     "phpstan/phpstan-symfony": "^0.11"
