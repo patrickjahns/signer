@@ -6,9 +6,10 @@ steps:
     image: composer
     commands:
       - composer install --ignore-platform-reqs
-      - composer bin codestyle install
-      - composer bin phpstan install
-      - composer bin phpunit install
+      - composer bin codestyle install --ignore-platform-reqs
+      - composer bin phpstan install --ignore-platform-reqs
+      - composer bin phpunit install --ignore-platform-reqs
+      - composer bin phan install --ignore-platform-reqs
 
   - name: codestyle
     image: php:7.3-cli
@@ -19,6 +20,13 @@ steps:
     image: php:7.3-cli
     commands:
       - php vendor-bin/phpstan/vendor/bin/phpstan analyse -l 5
+
+  - name: static-code-analysis-phan
+    image: php:7.3-cli
+    commands:
+      - pecl install ast
+      - docker-php-ext-enable ast
+      - php vendor-bin/phan/vendor/bin/phan --config-file .phan/config.php --require-config-exists
 
   - name: unit-tests
     image: php:7.3-cli

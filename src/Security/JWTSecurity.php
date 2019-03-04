@@ -28,6 +28,7 @@ use Jose\Component\Checker\ClaimCheckerManager;
 use Jose\Component\Checker\ExpirationTimeChecker;
 use Jose\Component\Checker\HeaderCheckerManager;
 use Jose\Component\Checker\IssuedAtChecker;
+use Jose\Component\Checker\MissingMandatoryClaimException;
 use Jose\Component\Checker\NotBeforeChecker;
 use Jose\Component\Core\AlgorithmManager;
 use Jose\Component\Core\Converter\StandardConverter;
@@ -43,6 +44,9 @@ use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class JWTSecurity.
+ *
+ * @phan-file-suppress PhanDeprecatedClass
+ * @phan-file-suppress PhanDeprecatedInterface
  */
 class JWTSecurity
 {
@@ -192,8 +196,11 @@ class JWTSecurity
                 new AudienceChecker('signer'),
             ]
         );
-
-        $claims = $this->jsonConverter->decode($jws->getPayload());
+        $payload = $jws->getPayload();
+        if (null === $payload) {
+            throw new MissingMandatoryClaimException('missing payload', []);
+        }
+        $claims = $this->jsonConverter->decode($payload);
         $claimCheckerManager->check($claims, ['nbf', 'iat', 'iss', 'aud', 'scope', 'jti', 'sub']);
     }
 
@@ -213,7 +220,11 @@ class JWTSecurity
         }
 
         $jws = $this->getJWSFromToken($token);
-        $claims = $this->jsonConverter->decode($jws->getPayload());
+        $payload = $jws->getPayload();
+        if (null === $payload) {
+            return false;
+        }
+        $claims = $this->jsonConverter->decode($payload);
 
         if (!array_key_exists('scope', $claims)) {
             return false;

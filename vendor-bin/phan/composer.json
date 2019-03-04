@@ -1,0 +1,7 @@
+{
+  "name": "vendor-bin/phan",
+  "description": "seperated composer file for cli tools",
+  "require": {
+    "phan/phan": "^1.2"
+  }
+}

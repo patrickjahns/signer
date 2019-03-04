@@ -27,8 +27,6 @@ use Signer\Service\ArchiveService;
 use Signer\Service\CodeSignService;
 use Signer\Service\OCAppFactory;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\HttpFoundation\FileBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
@@ -72,11 +70,10 @@ class SignController
             throw new UnauthorizedHttpException('Bearer');
         }
 
-        /** @var array $files */
         if (count($request->files) > 1 || 0 === count($request->files)) {
             throw new BadRequestHttpException();
         }
-        /** @var UploadedFile $file */
+        /** @var \Symfony\Component\HttpFoundation\File\UploadedFile $file */
         $file = $request->files->getIterator()->current();
 
         if (!$file->isValid()) {

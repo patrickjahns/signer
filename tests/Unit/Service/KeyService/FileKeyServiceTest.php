@@ -29,7 +29,6 @@ use Signer\Service\KeyService\FileKeyService;
 
 class FileKeyServiceTest extends TestCase
 {
-
     /**
      * @var vfsStreamDirectory
      */

@@ -2,7 +2,6 @@
 
 /**
  * @author Patrick Jahns <github@patrickjahns.de>
- *
  * @copyright Copyright (c) 2019, Patrick Jahns.
  * @license GPL-2.0
  *
@@ -19,24 +18,23 @@
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- *
  */
 
 namespace Signer\Tests\Helper;
 
 class KeyHelper
 {
-	const JWK = [
-		'kid' => '-fctYHOgAMQaF-6OPs3W4BNdGWaFHWVrR6EZYNJXsU0',
-		'use' => 'sig',
-		'kty' => 'EC',
-		'crv' => 'P-256',
-		'x' => 'GhtY2XAH1sKT-Afom7M64AkkY51erDAqEVvBILyWXQo',
-		'y' => 'WwyRaSxWdUUyrDCh-MVWi0LYTPOejDoPFoC5VvyU_OQ',
-		'd' => '_s3V8kBCjXGnect5Seh-B1RjUiRgI8MTjGoggYCe5Q8',
-	];
+    const JWK = [
+        'kid' => '-fctYHOgAMQaF-6OPs3W4BNdGWaFHWVrR6EZYNJXsU0',
+        'use' => 'sig',
+        'kty' => 'EC',
+        'crv' => 'P-256',
+        'x' => 'GhtY2XAH1sKT-Afom7M64AkkY51erDAqEVvBILyWXQo',
+        'y' => 'WwyRaSxWdUUyrDCh-MVWi0LYTPOejDoPFoC5VvyU_OQ',
+        'd' => '_s3V8kBCjXGnect5Seh-B1RjUiRgI8MTjGoggYCe5Q8',
+    ];
 
-	const RSA_KEY = <<<EOD
+    const RSA_KEY = <<<EOD
 -----BEGIN RSA PRIVATE KEY-----
 MIIEowIBAAKCAQEAyr/+4RzUa+6swBXDxb4AehGeIXXfxRHUsB/EifOWqbhJQ2lQ
 Q/KHgebBqWxM8Ll1+NqDsznGkqfomOVX8ylZZPbn2B6aJBBpJzKC8qsb0M3wdvvI
@@ -66,7 +64,7 @@ J1BQLi7CePolXdivaaOX85S6Y3oU+1tiRap3cE7ik3InF4qnJ0wwkyjOy7Id5zCb
 -----END RSA PRIVATE KEY-----
 EOD;
 
-	const RSA_CERT = <<<EOD
+    const RSA_CERT = <<<EOD
 -----BEGIN CERTIFICATE-----
 MIIEHjCCAgYCCQCLqjieoC6p3jANBgkqhkiG9w0BAQsFADBFMQswCQYDVQQGEwJB
 VTETMBEGA1UECBMKU29tZS1TdGF0ZTEhMB8GA1UEChMYSW50ZXJuZXQgV2lkZ2l0
