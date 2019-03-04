@@ -26,21 +26,12 @@ use Jose\Component\Core\JWK;
 use PHPUnit\Framework\TestCase;
 use Signer\Security\JWKProvider;
 use Signer\Security\JWTSecurity;
+use Signer\Tests\Helper\KeyHelper;
 use Symfony\Component\HttpFoundation\HeaderBag;
 use Symfony\Component\HttpFoundation\Request;
 
 class JWTSecurityTest extends TestCase
 {
-    const JWK = [
-        'kid' => '-fctYHOgAMQaF-6OPs3W4BNdGWaFHWVrR6EZYNJXsU0',
-        'use' => 'sig',
-        'kty' => 'EC',
-        'crv' => 'P-256',
-        'x' => 'GhtY2XAH1sKT-Afom7M64AkkY51erDAqEVvBILyWXQo',
-        'y' => 'WwyRaSxWdUUyrDCh-MVWi0LYTPOejDoPFoC5VvyU_OQ',
-        'd' => '_s3V8kBCjXGnect5Seh-B1RjUiRgI8MTjGoggYCe5Q8',
-    ];
-
     /**
      * @var JWTSecurity
      */
@@ -51,7 +42,7 @@ class JWTSecurityTest extends TestCase
         $jwkProvider = $this->createMock(JWKProvider::class);
         $jwkProvider
             ->method('getJWK')
-            ->willReturn(JWK::create(self::JWK));
+            ->willReturn(JWK::create(KeyHelper::JWK));
         $this->security = new JWTSecurity($jwkProvider);
         parent::setUp();
     }

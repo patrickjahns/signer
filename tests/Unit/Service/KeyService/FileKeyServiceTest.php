@@ -29,8 +29,7 @@ use Signer\Service\KeyService\FileKeyService;
 
 class FileKeyServiceTest extends TestCase
 {
-    const CERT = '';
-    const KEY = '';
+
     /**
      * @var vfsStreamDirectory
      */
