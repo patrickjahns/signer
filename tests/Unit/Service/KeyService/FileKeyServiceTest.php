@@ -41,8 +41,8 @@ class FileKeyServiceTest extends TestCase
         // define my virtual file system
         $directory = [
             'keys' => [
-                'app.key' => KeyHelper::RSA_KEY,
-                'app.crt' => KeyHelper::RSA_CERT,
+                'theme-example.key' => KeyHelper::RSA_KEY,
+                'theme-example.crt' => KeyHelper::RSA_CERT,
             ],
             'no-keys' => [],
             'rsa' => [
@@ -58,6 +58,10 @@ class FileKeyServiceTest extends TestCase
             'invalid-cert' => [
                 'app.key' => KeyHelper::RSA_KEY,
                 'app.crt' => '',
+            ],
+            'key-wrong-id' => [
+                'test.key' => KeyHelper::RSA_KEY,
+                'test.crt' => KeyHelper::RSA_CERT,
             ],
         ];
         // setup and cache the virtual file system
@@ -76,7 +80,7 @@ class FileKeyServiceTest extends TestCase
     public function test_it_will_return_a_key_pair()
     {
         $keyService = new FileKeyService($this->filesystem->url() . '/keys');
-        $keyPair = $keyService->getKeyPairForAppId('app');
+        $keyPair = $keyService->getKeyPairForAppId('theme-example');
         $this->assertInstanceOf(OCAppKeySet::class, $keyPair);
     }
 
@@ -114,5 +118,14 @@ class FileKeyServiceTest extends TestCase
     {
         $keyService = new FileKeyService($this->filesystem->url() . '/invalid-cert');
         $keyPair = $keyService->getKeyPairForAppId('app');
+    }
+
+    /**
+     * @expectedException \RuntimeException
+     */
+    public function test_it_will_throw_an_exception_when_cert_cn_is_not_same_as_appid()
+    {
+        $keyService = new FileKeyService($this->filesystem->url() . '/key-wrong-id');
+        $keyPair = $keyService->getKeyPairForAppId('test');
     }
 }

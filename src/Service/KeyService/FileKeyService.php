@@ -95,6 +95,11 @@ class FileKeyService implements KeyServiceInterface
             $x509 = new X509();
             $x509->loadX509(file_get_contents($filepath));
             $x509->setPrivateKey($rsa);
+            /** @var array $values */
+            $values = $x509->getDN(X509::DN_OPENSSL);
+            if (!is_array($values) || !array_key_exists('CN', $values) || $values['CN'] !== $appId) {
+                throw new \RuntimeException('invalid key');
+            }
         } catch (\Exception $e) {
             throw new \RuntimeException('invalid key');
         }
