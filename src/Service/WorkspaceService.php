@@ -22,6 +22,8 @@
 
 namespace Signer\Service;
 
+use Symfony\Component\Filesystem\Filesystem;
+
 class WorkspaceService
 {
     /**
@@ -55,6 +57,6 @@ class WorkspaceService
 
     public function cleanup(): void
     {
-        rmdir($this->workspace);
+        (new Filesystem())->remove($this->workspace);
     }
 }
