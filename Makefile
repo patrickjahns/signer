@@ -22,6 +22,10 @@ help:
 dev:                       ## Initialize dev environment
 dev: install-deps
 
+.PHONY: clean
+clean:                     ## Remove dependencies
+clean: clean-deps
+
 ##
 ## Tests
 ##--------------------------------------
@@ -32,7 +36,7 @@ unit: vendor-bin/phpunit/vendor
 	$(PHPUNIT)  --testsuite unit
 
 .PHONY: functional
-functional:      ## Run php functional tests
+functional:       ## Run php functional tests
 functional: vendor-bin/phpunit/vendor
 	$(PHPUNIT)  --testsuite functional
 
@@ -60,6 +64,20 @@ phpstan: vendor-bin/phpstan/vendor
 ##
 ## Dependency management
 ##--------------------------------------
+
+.PHONY: clean-deps
+clean-deps: clean-composer clean-composer-bin
+
+.PHONY: clean-composer
+clean-composer:            ## cleanup composer folders
+clean-composer:
+	rm -rf vendor
+
+.PHONY: clean-composer-bin
+clean-composer-bin:        ## cleanup composer bin folders
+clean-composer-bin:
+	rm -rf vendor-bin/**/vendor
+	rm -rf vendor-bin/**/composer.lock
 
 .PHONY: check-composer
 check-composer:
