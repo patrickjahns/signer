@@ -30,7 +30,7 @@ use Symfony\Component\HttpKernel\KernelEvents;
 class TerminateSubscriber implements EventSubscriberInterface
 {
     /**
-     * @var
+     * @var WorkspaceService
      */
     private $workspaceService;
 

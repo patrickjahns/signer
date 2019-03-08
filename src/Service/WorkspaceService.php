@@ -34,7 +34,7 @@ class WorkspaceService
     /**
      * WorkspaceService constructor.
      *
-     * @param $base
+     * @param string $base
      */
     public function __construct($base)
     {
