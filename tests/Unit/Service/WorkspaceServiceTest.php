@@ -50,8 +50,8 @@ class WorkspaceServiceTest extends TestCase
 
     public function test_it_will_cleanup_the_workspace()
     {
-        $this->workspaceService->cleanup();
         $workspace = $this->workspaceService->getWorkspace();
+        $this->workspaceService->cleanup();
         $this->assertFalse($this->vfs->hasChild(basename($workspace)));
     }
 }

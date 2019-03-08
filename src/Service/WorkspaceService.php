@@ -37,11 +37,6 @@ class WorkspaceService
     public function __construct($base)
     {
         $this->workspace = $base . '/' . \uniqid('app', false);
-        if (false === file_exists($this->workspace)) {
-            if (!mkdir($concurrentDirectory = $this->workspace, 0700, true) && !is_dir($concurrentDirectory)) {
-                throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
-            }
-        }
     }
 
     /**
@@ -49,6 +44,12 @@ class WorkspaceService
      */
     public function getWorkspace(): string
     {
+        if (false === file_exists($this->workspace)) {
+            if (!mkdir($concurrentDirectory = $this->workspace, 0700, true) && !is_dir($concurrentDirectory)) {
+                throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+            }
+        }
+
         return $this->workspace;
     }
 
