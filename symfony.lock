@@ -2,8 +2,35 @@
     "bamarni/composer-bin-plugin": {
         "version": "v1.2.0"
     },
+    "cache/cache": {
+        "version": "0.4.0"
+    },
+    "csharpru/vault-php": {
+        "version": "3.6.0"
+    },
+    "csharpru/vault-php-guzzle6-transport": {
+        "version": "2.0.3"
+    },
+    "doctrine/cache": {
+        "version": "v1.8.0"
+    },
+    "doctrine/inflector": {
+        "version": "v1.3.0"
+    },
     "fgrosse/phpasn1": {
         "version": "v2.1.1"
+    },
+    "guzzlehttp/guzzle": {
+        "version": "6.3.3"
+    },
+    "guzzlehttp/promises": {
+        "version": "v1.3.1"
+    },
+    "guzzlehttp/psr7": {
+        "version": "1.5.2"
+    },
+    "league/flysystem": {
+        "version": "1.0.50"
     },
     "pear/archive_tar": {
         "version": "1.4.6"
@@ -26,11 +53,17 @@
     "psr/container": {
         "version": "1.0.0"
     },
+    "psr/http-message": {
+        "version": "1.0.1"
+    },
     "psr/log": {
         "version": "1.1.0"
     },
     "psr/simple-cache": {
         "version": "1.0.1"
+    },
+    "ralouphie/getallheaders": {
+        "version": "2.0.5"
     },
     "roave/security-advisories": {
         "version": "dev-master"
@@ -161,6 +194,9 @@
         "version": "v1.3.1"
     },
     "web-token/jwt-signature-algorithm-rsa": {
+        "version": "v1.3.1"
+    },
+    "weew/helpers-array": {
         "version": "v1.3.1"
     }
 }

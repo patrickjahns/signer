@@ -33,7 +33,8 @@ services:
         arguments:
             $searchPath: '%app.keyservice.lookup_directory%'
 
-    Signer\KeyService\KeyServiceInterface: '@Signer\Service\KeyService\FileKeyService'
+    Signer\Service\KeyService\KeyServiceInterface: '@Signer\Service\KeyService\FileKeyService'
+
 
     Signer\Security\JWTSecurity:
         autowire: false
