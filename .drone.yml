@@ -37,3 +37,15 @@ steps:
     image: php:7.3-cli
     commands:
       - make functional
+
+  - name: server
+    image: php:7.3-cli
+    detach: true
+    commands:
+      - cd public
+      - php -S 0.0.0.0:8000
+
+  - name: acceptance
+    image: php:7.3-cli
+    commands:
+      - bash ./tests/acceptance/basic-test.sh server:8000
