@@ -14,26 +14,26 @@ steps:
   - name: codestyle
     image: php:7.3-cli
     commands:
-      - php vendor-bin/codestyle/vendor/bin/php-cs-fixer fix --diff --diff-format udiff  --dry-run
+      - make style
 
   - name: static-code-analysis
     image: php:7.3-cli
     commands:
-      - php vendor-bin/phpstan/vendor/bin/phpstan analyse -l 5
+      - make phpstan
 
   - name: static-code-analysis-phan
     image: php:7.3-cli
     commands:
       - pecl install ast
       - docker-php-ext-enable ast
-      - php vendor-bin/phan/vendor/bin/phan --config-file .phan/config.php --require-config-exists
+      - make phan
 
   - name: unit-tests
     image: php:7.3-cli
     commands:
-      - php vendor-bin/phpunit/vendor/bin/phpunit  --testsuite unit
+      - make unit
 
   - name: functional-tests
     image: php:7.3-cli
     commands:
-      - php vendor-bin/phpunit/vendor/bin/phpunit  --testsuite functional
+      - make functional
