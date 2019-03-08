@@ -5,7 +5,7 @@
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     app.keyservice.lookup_directory: '%env(resolve:KEYSERVICE_DIR)%'
-    app.jwtsecurity.jwk_json: '%env(JWK_JSON)%'
+    app.jwtsecurity.jwk_json: '%env(jwk:JWK_JSON)%'
     app.workspace: '%env(resolve:WORKSPACE)%'
 
 services:
@@ -35,7 +35,7 @@ services:
 
     Signer\KeyService\KeyServiceInterface: '@Signer\Service\KeyService\FileKeyService'
 
-    Signer\Security\JWKProvider:
+    Signer\Security\JWTSecurity:
         autowire: false
         arguments:
             $jwk: '%app.jwtsecurity.jwk_json%'

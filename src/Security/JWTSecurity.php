@@ -83,11 +83,11 @@ class JWTSecurity
     /**
      * JWTSecurity constructor.
      *
-     * @param JWKProvider $JWKProvider
+     * @param JWK $jwk
      */
-    public function __construct(JWKProvider $JWKProvider)
+    public function __construct(JWK $jwk)
     {
-        $this->jwk = $JWKProvider->getJWK();
+        $this->jwk = $jwk;
         $this->algorithm = new ES256();
         $this->algorithmManager = AlgorithmManager::create([
             $this->algorithm,

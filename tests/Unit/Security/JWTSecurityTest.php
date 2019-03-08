@@ -24,7 +24,6 @@ namespace Signer\Tests\Unit\Security;
 
 use Jose\Component\Core\JWK;
 use PHPUnit\Framework\TestCase;
-use Signer\Security\JWKProvider;
 use Signer\Security\JWTSecurity;
 use Signer\Tests\Helper\KeyHelper;
 use Symfony\Component\HttpFoundation\HeaderBag;
@@ -39,11 +38,7 @@ class JWTSecurityTest extends TestCase
 
     public function setUp(): void
     {
-        $jwkProvider = $this->createMock(JWKProvider::class);
-        $jwkProvider
-            ->method('getJWK')
-            ->willReturn(JWK::create(KeyHelper::JWK));
-        $this->security = new JWTSecurity($jwkProvider);
+        $this->security = new JWTSecurity(JWK::create(KeyHelper::JWK));
         parent::setUp();
     }
 
