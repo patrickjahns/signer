@@ -22,17 +22,29 @@
 
 namespace Signer\Tests\Functional;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Signer\Tests\Helper\ApiClient;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
-class ApiTestCase extends WebTestCase
+class ApiTestCase extends KernelTestCase
 {
+    protected static function createClient(array $options = [], array $server = [])
+    {
+        $kernel = static::bootKernel($options);
+        $client = new ApiClient($kernel);
+        $client->setServerParameters($server);
+
+        return $client;
+    }
+
     /**
      * @before
      */
     public function setUpClient()
     {
-        $this->client = static::createClient([], ['HTTP_ACCEPT' => 'application/json']);
+        $this->client = self::createClient([], [
+            'HTTP_ACCEPT' => 'application/json',
+        ]);
     }
 
     /**

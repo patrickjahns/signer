@@ -74,7 +74,6 @@ class TerminateSubscriber implements EventSubscriberInterface
      */
     public function onKernelShutdown(PostResponseEvent $event)
     {
-        //TODO: fix test suite to reeanble cleanup
-        //$this->workspaceService->cleanup();
+        $this->workspaceService->cleanup();
     }
 }
