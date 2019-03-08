@@ -20,30 +20,38 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-namespace Signer\Service;
+namespace Signer\Tests\Unit\Service;
 
-use Signer\Exception\InvalidAppArchive;
-use Symfony\Component\Finder\Finder;
+use org\bovigo\vfs\vfsStream;
+use PHPUnit\Framework\TestCase;
+use Signer\Service\WorkspaceService;
 
-class ArchiveService
+class WorkspaceServiceTest extends TestCase
 {
-    public function extract(\SplFileInfo $file, string $targetFolder)
+    /**
+     * @var
+     */
+    private $workspaceService;
+
+    private $vfs;
+
+    public function setUp()
     {
-        $archive = new \Archive_Tar($file->getPathname());
-        $archive->extract($targetFolder);
-        if (!file_exists($targetFolder)) {
-            throw new InvalidAppArchive('archive could not be extracted');
-        }
+        $this->vfs = vfsStream::setup('tmp');
+        $this->workspaceService = new WorkspaceService(vfsStream::url('tmp'));
     }
 
-    public function compress($path, $filename)
+    public function test_it_will_return_a_path()
     {
-        $finder = new Finder();
-        $finder->in($path);
-        $targetFile = dirname($path) . '/' . $filename;
-        $archive = new \Archive_Tar($targetFile, 'gz');
-        $archive->createModify([$path], '', dirname($path));
+        $workspace = $this->workspaceService->getWorkspace();
+        $this->assertIsString($workspace);
+        $this->assertTrue($this->vfs->hasChild(basename($workspace)));
+    }
 
-        return $targetFile;
+    public function test_it_will_cleanup_the_workspace()
+    {
+        $this->workspaceService->cleanup();
+        $workspace = $this->workspaceService->getWorkspace();
+        $this->assertFalse($this->vfs->hasChild(basename($workspace)));
     }
 }

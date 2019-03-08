@@ -22,28 +22,38 @@
 
 namespace Signer\Service;
 
-use Signer\Exception\InvalidAppArchive;
-use Symfony\Component\Finder\Finder;
-
-class ArchiveService
+class WorkspaceService
 {
-    public function extract(\SplFileInfo $file, string $targetFolder)
+    /**
+     * @var string
+     */
+    private $workspace;
+
+    /**
+     * WorkspaceService constructor.
+     *
+     * @param $base
+     */
+    public function __construct($base)
     {
-        $archive = new \Archive_Tar($file->getPathname());
-        $archive->extract($targetFolder);
-        if (!file_exists($targetFolder)) {
-            throw new InvalidAppArchive('archive could not be extracted');
+        $this->workspace = $base . '/' . \uniqid('app', false);
+        if (false === file_exists($this->workspace)) {
+            if (!mkdir($concurrentDirectory = $this->workspace, 0700, true) && !is_dir($concurrentDirectory)) {
+                throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+            }
         }
     }
 
-    public function compress($path, $filename)
+    /**
+     * @return string
+     */
+    public function getWorkspace(): string
     {
-        $finder = new Finder();
-        $finder->in($path);
-        $targetFile = dirname($path) . '/' . $filename;
-        $archive = new \Archive_Tar($targetFile, 'gz');
-        $archive->createModify([$path], '', dirname($path));
+        return $this->workspace;
+    }
 
-        return $targetFile;
+    public function cleanup(): void
+    {
+        rmdir($this->workspace);
     }
 }

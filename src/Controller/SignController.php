@@ -26,6 +26,7 @@ use Signer\Security\JWTSecurity;
 use Signer\Service\ArchiveService;
 use Signer\Service\CodeSignService;
 use Signer\Service\OCAppFactory;
+use Signer\Service\WorkspaceService;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -47,14 +48,23 @@ class SignController
     private $security;
 
     /**
+     * @var WorkspaceService
+     */
+    private $workspaceService;
+
+    /**
      * SignController constructor.
      *
      * @param CodeSignService $codeSignService
      */
-    public function __construct(CodeSignService $codeSignService, JWTSecurity $security)
-    {
+    public function __construct(
+        CodeSignService $codeSignService,
+        JWTSecurity $security,
+        WorkspaceService $workspaceService
+    ) {
         $this->codeSignService = $codeSignService;
         $this->security = $security;
+        $this->workspaceService = $workspaceService;
     }
 
     /**
@@ -80,9 +90,10 @@ class SignController
             throw new BadRequestHttpException();
         }
 
+        $path = $this->workspaceService->getWorkspace();
+
         // Extract
         $archiveService = new ArchiveService();
-        $path = $archiveService->getTempFolder();
         $archiveService->extract($file, $path);
 
         // Load information on the app

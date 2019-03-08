@@ -6,6 +6,7 @@
 parameters:
     app.keyservice.lookup_directory: '%env(resolve:KEYSERVICE_DIR)%'
     app.jwtsecurity.jwk_json: '%env(JWK_JSON)%'
+    app.workspace: '%env(resolve:WORKSPACE)%'
 
 services:
     # default configuration for services in *this* file
@@ -38,3 +39,8 @@ services:
         autowire: false
         arguments:
             $jwk: '%app.jwtsecurity.jwk_json%'
+
+    Signer\Service\WorkspaceService:
+        autowire: false
+        arguments:
+            $base: '%app.workspace%'
