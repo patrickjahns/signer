@@ -4,7 +4,9 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
-    app.keyservice.lookup_directory: '%env(resolve:KEYSERVICE_DIR)%'
+    # can be file/vault_secret
+    app.keyservice.type: 'file'
+    app.keyservice.file.lookup_directory: '%env(resolve:KEYSERVICE_DIR)%'
     app.jwtsecurity.jwk_json: '%env(jwk:JWK_JSON)%'
     app.workspace: '%env(resolve:WORKSPACE)%'
 
@@ -31,10 +33,11 @@ services:
     Signer\Service\KeyService\FileKeyService:
         autowire: false
         arguments:
-            $searchPath: '%app.keyservice.lookup_directory%'
+            $searchPath: '%app.keyservice.file.lookup_directory%'
 
-    Signer\Service\KeyService\KeyServiceInterface: '@Signer\Service\KeyService\FileKeyService'
-
+    Signer\Service\KeyService\KeyServiceInterface:
+        factory: 'Signer\Service\KeyService\KeyServiceFactory:create'
+        arguments: ['%app.keyservice.type%']
 
     Signer\Security\JWTSecurity:
         autowire: false
