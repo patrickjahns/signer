@@ -26,7 +26,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Signer\Service\KeyService\FileKeyService;
 use Signer\Service\KeyService\KeyServiceFactory;
-use Signer\Service\KeyService\VaultClientFactory;
+use Signer\Service\Vault\VaultClientFactory;
 use Signer\Service\KeyService\VaultSecretKeyService;
 
 class KeyServiceFactoryTest extends TestCase

@@ -20,17 +20,47 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-namespace Signer\Service\KeyService;
+namespace Signer\Service\Vault;
 
-use VaultTransports\Guzzle6Transport;
+use Vault\Client;
 
-class VaultClientFactory
+class VaultClient extends Client
 {
     /**
-     * @return VaultClient
+     * @var string
      */
-    public function get(): VaultClient
+    private $namespace;
+
+    /**
+     * @param string $path
+     *
+     * @return string
+     */
+    public function buildPath($path)
     {
-        return new VaultClient(new Guzzle6Transport());
+        if (!$this->namespace) {
+            $this->logger->warning('namespace is not set!');
+
+            return parent::buildPath('/' . $path);
+        }
+
+        return parent::buildPath(sprintf('/%s%s', $this->namespace, $path));
+    }
+
+    /**
+     * @return string
+     */
+    public function getNamespace(): string
+    {
+        return $this->namespace;
+    }
+
+    /**
+     * @param string $namespace
+     */
+    public function setNamespace(string $namespace)
+    {
+        $namespace = trim($namespace, '/') . '/';
+        $this->namespace = $namespace;
     }
 }

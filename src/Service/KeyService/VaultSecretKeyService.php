@@ -26,22 +26,22 @@ use phpseclib\Crypt\RSA;
 use phpseclib\File\X509;
 use Signer\Exception\InvalidKeyException;
 use Signer\Model\OCAppKeySet;
-use Vault\Client;
+use Signer\Service\Vault\VaultClient;
 use Vault\Exceptions\AbstractResponseException;
 
 class VaultSecretKeyService implements KeyServiceInterface
 {
     /**
-     * @var Client
+     * @var VaultClient
      */
     private $vaultClient;
 
     /**
      * VaultSecretKeyService constructor.
      *
-     * @param Client $vaultClient
+     * @param VaultClient $vaultClient
      */
-    public function __construct(Client $vaultClient)
+    public function __construct(VaultClient $vaultClient)
     {
         $this->vaultClient = $vaultClient;
     }

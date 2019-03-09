@@ -20,10 +20,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-namespace Signer\Tests\Unit\Service\KeyService;
+namespace Signer\Tests\Unit\Vault\KeyService;
 
 use PHPUnit\Framework\TestCase;
-use Signer\Service\KeyService\VaultClient;
+use Signer\Service\Vault\VaultClient;
 use Vault\Transports\Transport;
 
 class VaultClientTest extends TestCase

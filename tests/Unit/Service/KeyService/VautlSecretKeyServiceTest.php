@@ -24,7 +24,7 @@ namespace Signer\Tests\Unit\Service\KeyService;
 
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Signer\Service\KeyService\VaultClient;
+use Signer\Service\Vault\VaultClient;
 use Signer\Service\KeyService\VaultSecretKeyService;
 use Signer\Tests\Helper\KeyHelper;
 use Vault\Exceptions\AbstractResponseException;
