@@ -2,3 +2,7 @@ sign:
     path: /sign
     controller: Signer\Controller\SignController::sign
     methods:    [POST]
+
+health:
+    path: /health
+    controller: Signer\Controller\HealthController::health
