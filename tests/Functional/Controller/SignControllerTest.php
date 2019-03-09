@@ -20,9 +20,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-namespace Signer\Tests\Functional;
+namespace Signer\Tests\Functional\Controller;
 
 use Signer\Security\JWTSecurity;
+use Signer\Tests\Functional\ApiTestCase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Response;
