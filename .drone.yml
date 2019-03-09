@@ -1,6 +1,10 @@
 kind: pipeline
 name: default
 
+workspace:
+  base: /drone
+  path: src
+
 steps:
   - name: composer
     image: composer
@@ -43,11 +47,44 @@ steps:
     detach: true
     commands:
       - cd public
-      - APP_ENV=local php -S 0.0.0.0:8000
+      - APP_ENV=cilocal php -S 0.0.0.0:8000
 
-  - name: acceptance
+  - name: end-2-end-filekeyservice
     image: php:7.3-cli
     environment:
-      APP_ENV: local
+      APP_ENV: cilocal
     commands:
       - bash ./tests/acceptance/basic-test.sh server-local-keyservice:8000
+
+  - name: unseal-vault
+    image: vault
+    environment:
+      VAULT_ADDR: http://vault:8200
+    commands:
+      - vault operator unseal f82addfd7cb6dc7de391b9d8a9fb55abbf4cfe14681894308f4c957ffce28730
+
+  - name: server-vault-keyservice
+    image: php:7.3-cli
+    detach: true
+    environment:
+      APP_ENV: civault
+      VAULT_TOKEN: s.cp3UNqCS7vTNeG1XusDoDxCH
+      VAULT_NAMESPACE: signer
+      VAULT_URL: http://vault:8200
+    commands:
+      - cd public
+      - php -S 0.0.0.0:8000
+
+  - name: end-2-end-vault
+    image: php:7.3-cli
+    environment:
+      APP_ENV: civault
+    commands:
+      - bash ./tests/acceptance/basic-test.sh server-vault-keyservice:8000
+
+
+services:
+  - name: vault
+    image: vault
+    entrypoint: [ vault ]
+    command: [ "server", "-config=/drone/src/tests/vault/config/vault.json" ]
