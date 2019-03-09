@@ -88,7 +88,7 @@ class VaultClientFactory
             case 'credentials':
                 $credentialArray = $definition['auth']['credentials'];
                 if (!array_key_exists('username', $credentialArray) || !array_key_exists('password', $credentialArray)) {
-                    throw new \RuntimeException('missinge username or password for credential authentication');
+                    throw new \RuntimeException('missing username or password for credential authentication');
                 }
 
                 return new UserPassAuthenticationStrategy($credentialArray['username'], $credentialArray['password']);
@@ -102,7 +102,7 @@ class VaultClientFactory
             case 'token':
                 return new TokenAuthenticationStrategy((string) $definition['auth']['token']);
             default:
-                throw new \RuntimeException('unkown authentication strategy');
+                throw new \RuntimeException('unknown authentication strategy');
         }
     }
 }
