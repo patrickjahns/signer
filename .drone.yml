@@ -47,5 +47,7 @@ steps:
 
   - name: acceptance
     image: php:7.3-cli
+    environment:
+      APP_ENV: local
     commands:
       - bash ./tests/acceptance/basic-test.sh server-local-keyservice:8000
