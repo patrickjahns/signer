@@ -6,8 +6,6 @@ services:
     ports:
       - "127.0.0.1:8200:8200"
     volumes:
-      - ./tests/vault/file:/vault/file:rw
-      - ./tests/vault/config:/vault/config:rw
-    cap_add:
-      - IPC_LOCK
-    entrypoint: vault server -config=/vault/config/vault.json
+      - ./tests/vault/file:/drone/src/tests/vault/file:rw
+      - ./tests/vault/config:/drone/src/tests/vault/config:rw
+    entrypoint: vault server -config=/drone/src/tests/vault/config/vault.json
