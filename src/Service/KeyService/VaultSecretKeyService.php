@@ -68,6 +68,7 @@ class VaultSecretKeyService implements KeyServiceInterface
     private function getData(string $appId): array
     {
         try {
+            $this->vaultClient->authenticate();
             $response = $this->vaultClient->read($appId);
 
             return $response->getData();
