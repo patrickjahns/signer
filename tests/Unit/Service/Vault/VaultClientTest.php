@@ -55,7 +55,8 @@ class VaultClientTest extends TestCase
             'remove leading' => ['/test/', 'test/'],
             'remove several leading' => ['/////test/', 'test/'],
             'remove several trailing' => ['test////', 'test/'],
-            'lave subpath' => ['/t/e/s/t////', 't/e/s/t/'],
+            'keep subpath' => ['/t/e/s/t////', 't/e/s/t/'],
+            'root namespace' => ['', '/'],
         ];
     }
 

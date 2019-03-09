@@ -29,7 +29,7 @@ class VaultClient extends Client
     /**
      * @var string
      */
-    private $namespace;
+    private $namespace = '';
 
     /**
      * @param string $path
@@ -38,13 +38,13 @@ class VaultClient extends Client
      */
     public function buildPath($path)
     {
-        if (!$this->namespace) {
+        if ('' === $this->namespace) {
             $this->logger->warning('namespace is not set!');
 
             return parent::buildPath('/' . $path);
         }
 
-        return parent::buildPath(sprintf('/%s%s', $this->namespace, $path));
+        return parent::buildPath(sprintf('/%s%s', $this->getNamespace(), $path));
     }
 
     /**
@@ -52,7 +52,7 @@ class VaultClient extends Client
      */
     public function getNamespace(): string
     {
-        return $this->namespace;
+        return $this->namespace . '/';
     }
 
     /**
@@ -60,7 +60,7 @@ class VaultClient extends Client
      */
     public function setNamespace(string $namespace)
     {
-        $namespace = trim($namespace, '/') . '/';
+        $namespace = trim($namespace, '/');
         $this->namespace = $namespace;
     }
 }
