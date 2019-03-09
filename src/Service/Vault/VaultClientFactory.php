@@ -56,7 +56,7 @@ class VaultClientFactory
             throw new \RuntimeException('missing url for vault client');
         }
 
-        return new Guzzle6Transport(['base_url' => $definition['url']]);
+        return new Guzzle6Transport(['base_uri' => $definition['url']]);
     }
 
     /**
