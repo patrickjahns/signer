@@ -22,6 +22,8 @@
 
 namespace Signer\Service\KeyService;
 
+use Signer\Service\Vault\VaultClientFactory;
+
 class KeyServiceFactory
 {
     /**
@@ -37,31 +39,49 @@ class KeyServiceFactory
     /**
      * KeyServiceFactory constructor.
      *
-     * @param FileKeyService     $fileKeyService
      * @param VaultClientFactory $vaultClientFactory
      */
     public function __construct(
-        FileKeyService $fileKeyService,
         VaultClientFactory $vaultClientFactory
     ) {
-        $this->fileKeyService = $fileKeyService;
         $this->vaultClientFactory = $vaultClientFactory;
     }
 
     /**
-     * @param string $type
+     * @param array $definition
      *
      * @return KeyServiceInterface
      */
-    public function create(string $type): KeyServiceInterface
+    public function create(array $definition): KeyServiceInterface
     {
+        $type = (string) array_key_first($definition);
         switch ($type) {
             case 'file':
-                return $this->fileKeyService;
+                return $this->getFileKeyService($definition['file']);
             case 'vault_secret':
-                return new VaultSecretKeyService($this->vaultClientFactory->get());
+                return $this->createVaultSecretKeyService($definition['vault_secret']);
             default:
                 throw new \RuntimeException(sprintf('Keyservice %s unknown', $type));
         }
+    }
+
+    /**
+     * @param array $definition
+     *
+     * @return FileKeyService
+     */
+    private function getFileKeyService(array $definition): FileKeyService
+    {
+        return new FileKeyService($definition['lookup_directory']);
+    }
+
+    /**
+     * @param array $definition
+     *
+     * @return VaultSecretKeyService
+     */
+    private function createVaultSecretKeyService(array $definition): VaultSecretKeyService
+    {
+        return new VaultSecretKeyService($this->vaultClientFactory->get($definition));
     }
 }

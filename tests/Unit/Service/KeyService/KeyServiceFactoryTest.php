@@ -48,10 +48,8 @@ class KeyServiceFactoryTest extends TestCase
 
     public function setUp()
     {
-        $this->fileKeyService = $this->createMock(FileKeyService::class);
         $this->vaultClientFactory = $this->createMock(VaultClientFactory::class);
         $this->keyServiceFactory = new KeyServiceFactory(
-            $this->fileKeyService,
             $this->vaultClientFactory
         );
     }
@@ -59,20 +57,36 @@ class KeyServiceFactoryTest extends TestCase
     /**
      * @expectedException \RuntimeException
      */
-    public function test_it_will_throw_an_error_on_unkown_service()
+    public function test_it_will_throw_an_error_when_array_is_not_valid()
     {
-        $this->keyServiceFactory->create('test');
+        $this->keyServiceFactory->create(['test']);
+    }
+
+    /**
+     * @expectedException \RuntimeException
+     */
+    public function test_it_will_throw_an_error_when_service_unknown()
+    {
+        $this->keyServiceFactory->create(['test' => []]);
     }
 
     public function test_it_will_return_a_filekey_service()
     {
-        $fileKeyService = $this->keyServiceFactory->create('file');
+        $fileKeyService = $this->keyServiceFactory->create([
+            'file' => [
+                'lookup_directory' => 'test',
+            ],
+        ]);
         $this->assertInstanceOf(FileKeyService::class, $fileKeyService);
     }
 
     public function test_it_will_return_a_vaultsecret_service()
     {
-        $fileKeyService = $this->keyServiceFactory->create('vault_secret');
+        $fileKeyService = $this->keyServiceFactory->create([
+            'vault_secret' => [
+                '',
+            ],
+        ]);
         $this->assertInstanceOf(VaultSecretKeyService::class, $fileKeyService);
     }
 }
