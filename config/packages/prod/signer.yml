@@ -1,0 +1,7 @@
+signer:
+  keyservice:
+    vault_secret:
+      url: '%env(VAULT_URL)%'
+      namespace: '%env(VAULT_NAMESPACE)%'
+      auth:
+        token: '%env(VAULT_TOKEN)%'

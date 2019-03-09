@@ -1,0 +1,13 @@
+version: '3.6'
+
+services:
+  vault:
+    image: vault
+    ports:
+      - "127.0.0.1:8200:8200"
+    volumes:
+      - ./tests/vault/file:/vault/file:rw
+      - ./tests/vault/config:/vault/config:rw
+    cap_add:
+      - IPC_LOCK
+    entrypoint: vault server -config=/vault/config/vault.json

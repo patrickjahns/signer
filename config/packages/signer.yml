@@ -1,0 +1,21 @@
+# signer:
+#    jwk: 'token'
+#    workspace: '/tmp/workspace'
+#    keyservice:
+#        file:
+#            lookup_directory: '%env(resolve:KEYSERVICE_DIR)%'
+#        vault_secret:
+#            url: http://127.0.0.1:8200
+#            namespace: signer
+#            auth:
+#                token: validtoken
+#                credentials:
+#                    username: username
+#                    password: password
+#                role:
+#                    id: role_id
+#                    secret: role_seret
+
+signer:
+  jwk: '%env(jwk:JWK_JSON)%'
+  workspace: '%env(resolve:WORKSPACE)%'
